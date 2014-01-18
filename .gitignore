@@ -1,0 +1,12 @@
+program.asm
+venv
+build
+dist
+
+# python specific
+.pyc
+
+# vim swp files
+.swp
+.swo
+*~
