@@ -4,9 +4,9 @@ build
 dist
 
 # python specific
-.pyc
+*.pyc
 
 # vim swp files
-.swp
-.swo
+*.swp
+*.swo
 *~

@@ -13,16 +13,20 @@ def main():
         parser.add_argument("file", help="file to be assembled.")
         parser.add_argument('-o','--outfile', help='output file',
                             default='a.out', required=False)
-        parser.add_argument("-v", "--verbosity", type=int, choices=[0, 1, 2],
-                            default=0, help="increase output verbosity")
+        parser.add_argument('-v', '--verbosity', type=int, choices=[0, 1, 2],
+                            default=0, help='increase output verbosity')
+        parser.add_argument('-l', '--logfile', help='info and error log file',
+                            required=False)
         args = parser.parse_args()
 
-        with open(args.file) as f:
-            assemble(f, args.verbosity)
-    else:
         try:
-            import cStringIO as StringIO
-        except ImportError:
-            import StringIO
-
+            with open(args.file) as f:
+                assemble(f, args.verbosity)
+        except IOError:
+            print("[IO Error]: The file could not be opened.")
+    else:
         assemble(sys.stdin)
+
+
+if __name__ == '__main__':
+    main()

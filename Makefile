@@ -2,7 +2,8 @@ test:
 		coverage run tests.py
 
 verify:
-		pyflakes sic_assembler
+		pyflakes src/sic_assembler
+		pep8 --ignore=E501, E225 src/sic_assembler
 
 install:
 		python setup.py install
