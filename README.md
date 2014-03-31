@@ -14,7 +14,7 @@ Via source code / GitHub:
     $ python setup.py install
     
 
-Usage
+Example
 -----
 ```python
 >>> from sic_assembler import Assembler
