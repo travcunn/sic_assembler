@@ -1,0 +1,12 @@
+[run]
+omit =
+    tests.py
+include =
+    sic_assembler/assembler.py
+
+
+[report]
+exclude_lines =
+    if __name__ == .__main__.:
+    pragma: no cover
+    def __repr__

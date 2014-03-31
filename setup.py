@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup  (
     name        = 'sic_assembler',
@@ -9,8 +9,8 @@ setup  (
     author_email = 'travcunn@umail.iu.edu',
     url = 'https://github.com/travcunn/sic_assembler',
     license = 'MIT',
-    packages  =  find_packages('src'),
-    package_dir = {'' : 'src'},
+    packages  =  ['sic_assembler'],
+    package_dir = {'sic_assembler' : 'sic_assembler'},
     entry_points = {
         'console_scripts': [
             'sic-assembler = sic_assembler.__init__:main',
