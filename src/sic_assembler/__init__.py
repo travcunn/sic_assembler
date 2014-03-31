@@ -2,6 +2,7 @@ import argparse
 import sys
 
 from assembler import assemble
+from errors import OpcodeLookupError
 
 
 def main():
@@ -24,6 +25,8 @@ def main():
                 assemble(f, args.verbosity)
         except IOError:
             print("[IO Error]: The file could not be opened.")
+        except OpcodeLookupError, e:
+            print e.details['contents']
     else:
         assemble(sys.stdin)
 

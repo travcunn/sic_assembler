@@ -7,6 +7,11 @@ class BaseError(Exception):
         return repr(self.message)
 
 
+class DuplicateSymbolError(BaseError):
+    def __init__(self, *args, **kwargs):
+        super(DuplicateSymbolError, self).__init__(*args, **kwargs)
+
+
 class LineFieldsError(BaseError):
     def __init__(self, *args, **kwargs):
         super(LineFieldsError, self).__init__(*args, **kwargs)
