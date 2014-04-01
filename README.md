@@ -1,7 +1,9 @@
 SIC/XE Assembler
 ================
 
-A 2 pass SIC/XE assembler.
+The SIC machine is a hypothetical computer system that can be found in "System Software: An Introduction to Systems Programming", by Leland Beck.
+
+This is a 2 pass SIC/XE assembler.
 
 
 Installation
