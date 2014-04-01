@@ -27,6 +27,7 @@ Example
 >>> a.generated_objects
 >>> []
 ```
+![http://media.tumblr.com/tumblr_ltuzjvbQ6L1qzgpx9.gif](http://media.tumblr.com/tumblr_ltuzjvbQ6L1qzgpx9.gif)
 
 
 Command Line Usage
