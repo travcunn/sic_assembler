@@ -28,7 +28,6 @@ Usage
 []
 ```
 
-
 Command Line
 ------------
 Included is a command line utility for assembling source files, which can be run after installing the package:
