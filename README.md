@@ -14,7 +14,7 @@ Via source code / GitHub:
     $ python setup.py install
     
 
-Example
+Usage
 -----
 ```python
 >>> from sic_assembler import Assembler
@@ -30,7 +30,7 @@ Example
 ![http://media.tumblr.com/tumblr_ltuzjvbQ6L1qzgpx9.gif](http://media.tumblr.com/tumblr_ltuzjvbQ6L1qzgpx9.gif)
 
 
-Command Line Usage
+Command Line
 --------------------
 Included is a command line utility for assembling source files, which can be run after installing the package:
 
