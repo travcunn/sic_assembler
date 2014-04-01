@@ -25,13 +25,13 @@ Usage
 >>>
 >>> # array of the objects generated with some debugging information
 >>> a.generated_objects
->>> []
+[]
 ```
 ![http://media.tumblr.com/tumblr_ltuzjvbQ6L1qzgpx9.gif](http://media.tumblr.com/tumblr_ltuzjvbQ6L1qzgpx9.gif)
 
 
 Command Line
---------------------
+------------
 Included is a command line utility for assembling source files, which can be run after installing the package:
 
     $ sic-assembler ./my-program.asm
@@ -40,6 +40,11 @@ Or specify an output file:
 
     $ sic-assembler ./my-program.asm -o outfile
     
-You can also pipe input/output:
+You can also pipe things around:
 
     $ cat my-program.asm | sic-assembler > outfile
+
+
+Features
+--------
+todo
