@@ -29,10 +29,10 @@ literal = lambda x: x.startswith('=')
 
 class Format1(object):
     """ Format 1 instruction class. """
-    def __init__(self, symtab, opcode, address):
-        self._symtab = symtab
-        self._opcode = opcode
-        self._address = address
+    def __init__(self, line_info):
+        self._symtab = line_info['symtab']
+        self._opcode = line_info['opcode']
+        self._address = line_info['operand']
 
     def generate(self):
         """ Generate the machine code for the instruction. """
@@ -82,7 +82,6 @@ class Assembler(object):
         """ Assemble the contents of a file-like object. """
         self.first_pass()
         self.second_pass()
-
 
     def first_pass(self):
         """ Pass 1. """
@@ -166,9 +165,13 @@ class Assembler(object):
                 else:
                     line_fields.operand = 0
 
-                instruction = Format1(symtab=self.symtab,
-                                  opcode=line_fields.opcode,
-                                  address=line_fields.operand)
+                # data to be passed into each instruction type
+                instruction_info = {'symtab': self.symtab,
+                                    'opcode': line_fields.opcode,
+                                    'operand': line_fields.operand}
+
+                #TODO: determine which instruction format to create
+                instruction = Format1(instruction_info)
 
                 object_code.append(instruction.generate())
 
