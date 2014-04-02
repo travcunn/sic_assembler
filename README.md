@@ -21,7 +21,7 @@ Usage
 ```python
 >>> from sic_assembler import Assembler
 >>>
->>> a = Assembler(file='source-file.asm')
+>>> a = Assembler(open('source-file.asm', 'r'))
 >>> # Generate some assembly
 >>> a.assemble()
 >>>
@@ -34,7 +34,7 @@ Usage
 ```python
 >>> from sic_assembler import Assembler
 >>>
->>> a = Assembler(file='source-file.asm')
+>>> a = Assembler(open('source-file.asm', 'r'))
 >>> # Run through the first pass
 >>> a.first_pass()
 >>>
