@@ -65,11 +65,6 @@ You can also pipe things around:
     $ cat my-program.asm | sic-assembler > outfile
 
 
-Features
---------
-todo
-
-
 Testing
 -------
 Run all of the tests:
