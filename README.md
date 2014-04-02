@@ -70,3 +70,9 @@ Testing
 Run all of the tests:
 
     $ python tests.py
+
+
+Useful links
+------------
+
+http://www-rohan.sdsu.edu/~stremler/2003_CS530/SicArchitecture.html
