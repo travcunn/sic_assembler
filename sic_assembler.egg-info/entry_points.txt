@@ -1,3 +1,0 @@
-[console_scripts]
-sic-assembler = sic_assembler.__init__:main
-

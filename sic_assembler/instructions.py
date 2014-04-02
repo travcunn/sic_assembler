@@ -1,14 +1,17 @@
-from collections import namedtuple
-
 # Important Bookmarks:
 # Page 50: Assembler Algorithm and Data Structures
 # Page 8/9 and 498: Instruction Formats
 # Page 496: Instructions
 
-# Represent an instruction
-Instr = namedtuple('Instr', 'opcode format operands')
+class Instr(object):
+    """ Represents a single instruction. """
+    def __init__(self, opcode, format, operands):
+        self.opcode = opcode
+        self.format = format
+        self.operands = operands
 
-# Operation code table
+
+# Operation code table, found on page 496
 op_table = { 'ADD':     Instr(0x18, 3, ('m')),
              'ADDF':    Instr(0x58, 3, ('m')),
              'ADDR':    Instr(0x90, 2, ('r1', 'r2')),
@@ -70,7 +73,6 @@ op_table = { 'ADD':     Instr(0x18, 3, ('m')),
            }
 
 
-# Flags table
 flag_table = { 'n': 0b100000,
                'i': 0b010000,
                'x': 0b001000,
@@ -78,3 +80,16 @@ flag_table = { 'n': 0b100000,
                'p': 0b000010,
                'e': 0b000001
              }
+
+
+# page 5 and 7 of the book
+registers_table = {'A':  0,
+                   'X':  1,
+                   'L':  2,
+                   'B':  3,
+                   'S':  4,
+                   'T':  5,
+                   'F':  6,
+                   'PC': 8,
+                   "SW": 9
+                  }

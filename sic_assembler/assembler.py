@@ -1,13 +1,6 @@
 from errors import DuplicateSymbolError, LineFieldsError, OpcodeLookupError, \
         UndefinedSymbolError
-from instructions import op_table
-
-
-class SourceLine(object):
-    def __init__(self, label, opcode, operand):
-        self.label = label
-        self.opcode = opcode
-        self.operand = operand
+from instructions import op_table, registers_table
 
 
 # A comment
@@ -27,8 +20,108 @@ extended = lambda x: x.startswith('+')
 literal = lambda x: x.startswith('=')
 
 
-class Format1(object):
+class SourceLine(object):
+    def __init__(self, label, opcode, operand):
+        self.label = label
+        self.opcode = opcode
+        self.operand = operand
+
+
+class Format(object):
+    """ Base Instruction Format class. """
+    def generate(self):
+        raise NotImplementedError
+
+
+class Format1(Format):
     """ Format 1 instruction class. """
+    def __init__(self, opcode):
+        self._opcode = opcode
+
+    def generate(self):
+        """ Generate the machine code for the instruction. """
+        if self._opcode is None:
+            raise LineFieldsError(message="An opcode was not specified.")
+
+        output = ""
+
+        # lookup the opcode
+        opcode_lookup = op_table[self._opcode].opcode
+        stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
+        padded_opcode = stripped_opcode.zfill(2)
+        output += str(padded_opcode)
+
+        return self._opcode, None, output
+
+
+class Format2(Format):
+    """ Format 2 instruction class. """
+    def __init__(self, opcode, r1, r2):
+        self._opcode = opcode
+        self._r1 = r1
+        self._r2 = r2
+
+    def generate(self):
+        """ Generate the machine code for the instruction. """
+        if self._opcode is None:
+            raise LineFieldsError(message="An opcode was not specified.")
+
+        output = ""
+
+        # lookup the opcode
+        opcode_lookup = op_table[self._opcode].opcode
+        stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
+        padded_opcode = stripped_opcode.zfill(2)
+        output += str(padded_opcode)
+
+        # look up the registers
+        r1_lookup = registers_table[self._r1]
+        stripped_r1 = str(hex(r1_lookup)).lstrip("0x") or "0"
+        output += str(stripped_r1)
+
+        if self._r2 is not None:
+            r2_lookup = registers_table[self._r2]
+            stripped_r2 = str(hex(r2_lookup)).lstrip("0x") or "0"
+            output += str(stripped_r2)
+        else:
+            output += "0"
+
+        return self._opcode, (self._r1, self._r2), output
+
+#TODO: make this work correctly, with flags
+class Format3(Format):
+    """ Format 3 instruction class. """
+    def __init__(self, opcode, disp):
+        self._opcode = opcode
+        self._disp = disp
+
+    def generate(self):
+        """ Generate the machine code for the instruction. """
+        if self._opcode is None:
+            raise LineFieldsError(message="An opcode was not specified.")
+
+        output = ""
+
+        # lookup the opcode
+        opcode_lookup = op_table[self._opcode].opcode
+        stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
+        padded_opcode = stripped_opcode.zfill(2)
+        output += str(padded_opcode)
+
+        # look up the address in symtab
+        if self._disp is not None:
+            stripped_address = str(self._disp).lstrip("0x") or "0"
+            padded_address = stripped_address.zfill(4)
+            output += str(padded_address)
+        else:
+            output += "0000"
+
+        return self._opcode, self._disp, output
+
+
+#TODO: make this work correctly, with flags
+class Format4(Format):
+    """ Format 4 instruction class. """
     def __init__(self, line_info):
         self._symtab = line_info['symtab']
         self._opcode = line_info['opcode']
@@ -153,25 +246,47 @@ class Assembler(object):
             line_fields = parse_line(line, line_number)
             found_opcode = op_table.get(line_fields.opcode)
             if found_opcode:
-                if line_fields.operand and not literal(line_fields.operand):
-                    found_symbol_address = self.symtab.get(line_fields.operand)
-                    if found_symbol_address:
-                        line_fields.operand = found_symbol_address
-                    else:
-                        line_fields.operand = 0
-                        raise UndefinedSymbolError(message='Undefined symbol on line: ' +
-                                str(line_number+2), code=1,
-                                line_number=line_number+2, contents=line)
+                # determine the instruction format
+                format = determine_format(line_fields.opcode)
+                if line_fields.operand is not None and not \
+                        literal(line_fields.operand):
+                    if format is 3:  # only lookup symbols if type 3
+                        found_symbol_address = self.symtab.get(line_fields.operand)
+                        if found_symbol_address is not None:
+                            line_fields.operand = found_symbol_address
+                        else:
+                            line_fields.operand = 0
+                            raise UndefinedSymbolError(
+                                    message='Undefined symbol on line: ' +
+                                    str(line_number+1), code=1,
+                                    line_number=line_number+1, contents=line)
+                #TODO: process the literal here in an elif
                 else:
                     line_fields.operand = 0
 
+                #TODO eventually only have this in format 3 and 4
                 # data to be passed into each instruction type
                 instruction_info = {'symtab': self.symtab,
                                     'opcode': line_fields.opcode,
                                     'operand': line_fields.operand}
 
                 #TODO: determine which instruction format to create
-                instruction = Format1(instruction_info)
+
+                if format is 1:
+                    instruction = Format1(opcode=line_fields.opcode)
+                elif format is 2:
+                    expected_operands = op_table[line_fields.opcode].operands
+                    if len(expected_operands) == 2:
+                        r1, r2 = line_fields.operand.split(',')
+                    elif len(expected_operands) == 1:
+                        r1, r2 = line_fields.operand, None
+                    instruction = Format2(opcode=line_fields.opcode,
+                                          r1=r1, r2=r2)
+                elif format is 3:
+                    instruction = Format3(opcode=line_fields.opcode,
+                                          disp=line_fields.operand)
+                elif format is 4:
+                    instruction = Format4(instruction_info)
 
                 object_code.append(instruction.generate())
 
@@ -199,6 +314,14 @@ class Assembler(object):
                         object_code.append(object_info)
 
         self.generated_objects = object_code
+
+
+def determine_format(opcode):
+    """ Determine the instruction format. """
+    if extended(opcode):
+        return op_table[opcode].format + 1
+    else:
+        return op_table[opcode].format
 
 
 def parse_line(line, line_number):
