@@ -5,6 +5,10 @@ The SIC machine is a hypothetical computer system that can be found in "System S
 
 This is a 2 pass SIC/XE assembler.
 
+TODO
+------------
+https://github.com/travcunn/sic_assembler/issues?labels=required-feature&page=1&state=open
+
 
 Installation
 ------------
@@ -70,3 +74,10 @@ Testing
 Run all of the tests:
 
     $ python tests.py
+
+
+Useful development links
+------------------------
+
+http://www-rohan.sdsu.edu/~stremler/2003_CS530/SicArchitecture.html
+http://www.unf.edu/~cwinton/html/cop3601/s10/class.notes/basic4-SICfmts.pdf
