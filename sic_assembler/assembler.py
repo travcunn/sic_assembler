@@ -34,7 +34,14 @@ class Format(object):
 
 
 class Format1(Format):
-    """ Format 1 instruction class. """
+    """ Format 1 instruction class.
+
+         8
+     ==========
+    |    op    |
+     ==========
+
+    """
     def __init__(self, opcode):
         self._opcode = opcode
 
@@ -55,7 +62,14 @@ class Format1(Format):
 
 
 class Format2(Format):
-    """ Format 2 instruction class. """
+    """ Format 2 instruction class.
+
+         8       4     4
+     ======================
+    |    op    | r1 |  r2  |
+     ======================
+
+    """
     def __init__(self, opcode, r1, r2):
         self._opcode = opcode
         self._r1 = r1
@@ -90,8 +104,15 @@ class Format2(Format):
 
 #TODO: make this work correctly, with flags
 class Format3(Format):
-    """ Format 3 instruction class. """
-    def __init__(self, opcode, disp):
+    """ Format 3 instruction class.
+
+        6      1   1   1   1   1   1         12
+     =================================================
+    |   op   | n | i | x | b | p | e |      disp      |
+     =================================================
+
+    """
+    def __init__(self, flags, opcode, disp):
         self._opcode = opcode
         self._disp = disp
 
@@ -121,8 +142,15 @@ class Format3(Format):
 
 #TODO: make this work correctly, with flags
 class Format4(Format):
-    """ Format 4 instruction class. """
-    def __init__(self, line_info):
+    """ Format 4 instruction class.
+
+        6      1   1   1   1   1   1              20
+     ============================================================
+    |   op   | n | i | x | b | p | e |          address          |
+     ============================================================
+
+    """
+    def __init__(self, flags, line_info):
         self._symtab = line_info['symtab']
         self._opcode = line_info['opcode']
         self._address = line_info['operand']
@@ -283,10 +311,10 @@ class Assembler(object):
                     instruction = Format2(opcode=line_fields.opcode,
                                           r1=r1, r2=r2)
                 elif format is 3:
-                    instruction = Format3(opcode=line_fields.opcode,
+                    instruction = Format3(None, opcode=line_fields.opcode,
                                           disp=line_fields.operand)
                 elif format is 4:
-                    instruction = Format4(instruction_info)
+                    instruction = Format4(None, instruction_info)
 
                 object_code.append(instruction.generate())
 
