@@ -5,6 +5,10 @@ The SIC machine is a hypothetical computer system that can be found in "System S
 
 This is a 2 pass SIC/XE assembler.
 
+TODO
+------------
+https://github.com/travcunn/sic_assembler/issues?labels=required-feature&page=1&state=open
+
 
 Installation
 ------------
