@@ -21,9 +21,9 @@ literal = lambda x: x.startswith('=')
 
 
 class SourceLine(object):
-    def __init__(self, label, opcode, operand):
+    def __init__(self, label, mnemonic, operand):
         self.label = label
-        self.opcode = opcode
+        self.mnemonic = mnemonic
         self.operand = operand
 
 
@@ -42,18 +42,18 @@ class Format1(Format):
      ==========
 
     """
-    def __init__(self, opcode):
-        self._opcode = opcode
+    def __init__(self, mnemonic):
+        self._mnemonic = mnemonic
 
     def generate(self):
         """ Generate the machine code for the instruction. """
-        if self._opcode is None:
-            raise LineFieldsError(message="An opcode was not specified.")
+        if self._mnemonic is None:
+            raise LineFieldsError(message="A mnemonic was not specified.")
 
         output = ""
 
         # lookup the opcode
-        opcode_lookup = op_table[self._opcode].opcode
+        opcode_lookup = op_table[self._mnemonic].opcode
         stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
         padded_opcode = stripped_opcode.zfill(2)
         output += str(padded_opcode)
@@ -70,20 +70,20 @@ class Format2(Format):
      ======================
 
     """
-    def __init__(self, opcode, r1, r2):
-        self._opcode = opcode
+    def __init__(self, mnemonic, r1, r2):
+        self._mnemonic = mnemonic
         self._r1 = r1
         self._r2 = r2
 
     def generate(self):
         """ Generate the machine code for the instruction. """
-        if self._opcode is None:
-            raise LineFieldsError(message="An opcode was not specified.")
+        if self._mnemonic is None:
+            raise LineFieldsError(message="A mnemonic was not specified.")
 
         output = ""
 
         # lookup the opcode
-        opcode_lookup = op_table[self._opcode].opcode
+        opcode_lookup = op_table[self._mnemonic].opcode
         stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
         padded_opcode = stripped_opcode.zfill(2)
         output += str(padded_opcode)
@@ -112,19 +112,20 @@ class Format3(Format):
      =================================================
 
     """
-    def __init__(self, flags, opcode, disp):
-        self._opcode = opcode
+    def __init__(self, flags, mnemonic, disp):
+        self._flags = flags
+        self._mnemonic = mnemonic
         self._disp = disp
 
     def generate(self):
         """ Generate the machine code for the instruction. """
-        if self._opcode is None:
-            raise LineFieldsError(message="An opcode was not specified.")
+        if self._mnemonic is None:
+            raise LineFieldsError(message="A mnemonic was not specified.")
 
         output = ""
 
         # lookup the opcode
-        opcode_lookup = op_table[self._opcode].opcode
+        opcode_lookup = op_table[self._mnemonic].opcode
         stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
         padded_opcode = stripped_opcode.zfill(2)
         output += str(padded_opcode)
@@ -137,7 +138,7 @@ class Format3(Format):
         else:
             output += "0000"
 
-        return self._opcode, self._disp, output
+        return self._mnemonic, self._disp, output
 
 
 #TODO: make this work correctly, with flags
@@ -150,10 +151,10 @@ class Format4(Format):
      ============================================================
 
     """
-    def __init__(self, flags, line_info):
-        self._symtab = line_info['symtab']
-        self._opcode = line_info['opcode']
-        self._address = line_info['operand']
+    def __init__(self, flags, mnemonic, operand):
+        self._flags = flags
+        self._mnemonic = mnemonic
+        self._operand = operand
 
     def generate(self):
         """ Generate the machine code for the instruction. """
@@ -210,9 +211,9 @@ class Assembler(object):
         # Read the first line and search for 'START'
         first = self.contents.next()
         first_line = parse_line(first, 1)
-        if first_line.opcode is not None:
+        if first_line.mnemonic is not None:
             # If the opcode is 'START', set the locctr to the starting address
-            if first_line.opcode == 'START':
+            if first_line.mnemonic == 'START':
                 self.start_address = int(first_line.operand, 16)
                 self.locctr = int(first_line.operand, 16)
 
@@ -232,15 +233,15 @@ class Assembler(object):
                                 line_number=line_number+2, contents=line)
 
                 # Search optab for the opcode
-                if line_fields.opcode in op_table:
+                if line_fields.mnemonic in op_table:
                     self.locctr += 3
-                elif line_fields.opcode == 'WORD':
+                elif line_fields.mnemonic == 'WORD':
                     self.locctr += 3
-                elif line_fields.opcode == 'RESW':
+                elif line_fields.mnemonic == 'RESW':
                     self.locctr += 3 * int(line_fields.operand)
-                elif line_fields.opcode == 'RESB':
+                elif line_fields.mnemonic == 'RESB':
                     self.locctr += int(line_fields.operand)
-                elif line_fields.opcode == 'BYTE':
+                elif line_fields.mnemonic == 'BYTE':
                     if line_fields.operand.startswith('X'):
                         value = line_fields.operand.replace("X", '')
                         stripped_value = value.replace("'", '')
@@ -254,11 +255,11 @@ class Assembler(object):
                         raise LineFieldsError(message="Invalid value for BYTE on line: " +
                                 str(line_number+2), code=1,
                                 line_number=line_number+2, contents=line)
-                elif line_fields.opcode == 'END':
+                elif line_fields.mnemonic == 'END':
                     # Stop reading through the file contents
                     break
                 else:
-                    raise OpcodeLookupError(message='The opcode is invalid on line: ' +
+                    raise OpcodeLookupError(message='The mnemonic is invalid on line: ' +
                                     str(line_number+2), code=1,
                                     line_number=line_number+2, contents=line)
 
@@ -272,10 +273,10 @@ class Assembler(object):
 
         for line_number, line in enumerate(self.temp_contents):
             line_fields = parse_line(line, line_number)
-            found_opcode = op_table.get(line_fields.opcode)
+            found_opcode = op_table.get(line_fields.mnemonic)
             if found_opcode:
                 # determine the instruction format
-                format = determine_format(line_fields.opcode)
+                format = determine_format(line_fields.mnemonic)
                 if line_fields.operand is not None and not \
                         literal(line_fields.operand):
                     if format is 3:  # only lookup symbols if type 3
@@ -292,80 +293,74 @@ class Assembler(object):
                 else:
                     line_fields.operand = 0
 
-                #TODO eventually only have this in format 3 and 4
-                # data to be passed into each instruction type
-                instruction_info = {'symtab': self.symtab,
-                                    'opcode': line_fields.opcode,
-                                    'operand': line_fields.operand}
-
                 #TODO: determine which instruction format to create
 
                 if format is 1:
-                    instruction = Format1(opcode=line_fields.opcode)
+                    instruction = Format1(mnemonic=line_fields.mnemonic)
                 elif format is 2:
-                    expected_operands = op_table[line_fields.opcode].operands
+                    expected_operands = op_table[line_fields.mnemonic].operands
                     if len(expected_operands) == 2:
                         r1, r2 = line_fields.operand.split(',')
                     elif len(expected_operands) == 1:
                         r1, r2 = line_fields.operand, None
-                    instruction = Format2(opcode=line_fields.opcode,
+                    instruction = Format2(mnemonic=line_fields.mnemonic,
                                           r1=r1, r2=r2)
                 elif format is 3:
-                    instruction = Format3(None, opcode=line_fields.opcode,
+                    instruction = Format3(None, mnemonic=line_fields.mnemonic,
                                           disp=line_fields.operand)
                 elif format is 4:
-                    instruction = Format4(None, instruction_info)
+                    instruction = Format4(None, mnemonic=line_fields.mnemonic,
+                                          operand=line_fields.operand)
 
                 object_code.append(instruction.generate())
 
             else:
-                if line_fields.opcode == 'WORD':
+                if line_fields.mnemonic == 'WORD':
                     hex_value = hex(int(line_fields.operand))
                     stripped_value = hex_value.lstrip("0x")
                     padded_value = stripped_value.zfill(6)
-                    object_info = (line_fields.opcode, line_fields.operand,
+                    object_info = (line_fields.mnemonic, line_fields.operand,
                                    padded_value)
                     object_code.append(object_info)
-                elif line_fields.opcode == 'BYTE':
+                elif line_fields.mnemonic == 'BYTE':
                     if line_fields.operand.startswith('X'):
                         value = line_fields.operand.replace("X", '')
                         stripped_value = value.replace("'", '')
-                        object_info = (line_fields.opcode,
+                        object_info = (line_fields.mnemonic,
                                        line_fields.operand, stripped_value)
                         object_code.append(object_info)
                     elif line_fields.operand.startswith("C"):
                         value = line_fields.operand.replace("C", '')
                         stripped_value = value.replace("'", '')
                         hex_value = stripped_value.encode('hex')
-                        object_info = (line_fields.opcode,
+                        object_info = (line_fields.mnemonic,
                                        line_fields.operand, hex_value)
                         object_code.append(object_info)
 
         self.generated_objects = object_code
 
 
-def determine_format(opcode):
+def determine_format(mnemonic):
     """ Determine the instruction format. """
-    if extended(opcode):
-        return op_table[opcode].format + 1
+    if extended(mnemonic):
+        return op_table[mnemonic].format + 1
     else:
-        return op_table[opcode].format
+        return op_table[mnemonic].format
 
 
 def parse_line(line, line_number):
-    """ Parse an individual line and return a namedtuple of the contents. """
+    """ Parse an individual line and return a SourceLine of the contents. """
     fields = line.split()
     if len(fields) is 3:
-        return SourceLine(label=fields[0], opcode=fields[1], operand=fields[2])
+        return SourceLine(label=fields[0], mnemonic=fields[1], operand=fields[2])
     elif len(fields) is 2:
-        return SourceLine(label=None, opcode=fields[0], operand=fields[1])
+        return SourceLine(label=None, mnemonic=fields[0], operand=fields[1])
     elif len(fields) is 1:
-        return SourceLine(label=None, opcode=fields[0], operand=None)
+        return SourceLine(label=None, mnemonic=fields[0], operand=None)
     else:
         raise LineFieldsError(message='Invalid amount of fields on line:' +
                               str(line_number+1), code=1,
                               line_number=line_number+1, contents=line)
-
 
 
 def step(message):
