@@ -27,7 +27,7 @@ def main():
         except IOError:
             print("[IO Error]: The file could not be opened.")
         except OpcodeLookupError, e:
-            print "Error information:"
+            print "[OpcodeLookupError] information:"
             print e.details
             raise
     else:
