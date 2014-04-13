@@ -7,6 +7,11 @@ class BaseError(Exception):
         return repr(self.message)
 
 
+class InstructionError(BaseError):
+    def __init__(self, *args, **kwargs):
+        super(InstructionError, self).__init__(*args, **kwargs)
+
+
 class DuplicateSymbolError(BaseError):
     def __init__(self, *args, **kwargs):
         super(DuplicateSymbolError, self).__init__(*args, **kwargs)

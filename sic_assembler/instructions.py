@@ -2,6 +2,9 @@
 # Page 50: Assembler Algorithm and Data Structures
 # Page 8/9 and 498: Instruction Formats
 # Page 496: Instructions
+import assembler
+from errors import InstructionError, LineFieldsError, UndefinedSymbolError
+
 
 class Instr(object):
     """ Represents a single instruction. """
@@ -12,64 +15,64 @@ class Instr(object):
 
 
 # Operation code table, found on page 496
-op_table = { 'ADD':     Instr(0x18, 3, ('m')),
-             'ADDF':    Instr(0x58, 3, ('m')),
-             'ADDR':    Instr(0x90, 2, ('r1', 'r2')),
-             'AND':     Instr(0x40, 3, ('m')),
-             'CLEAR':   Instr(0xB4, 2, ('r1')),
-             'COMP':    Instr(0x28, 3, ('m')),
-             'COMPF':   Instr(0x88, 3, ('m')),
-             'COMPR':   Instr(0xA0, 2, ('r1', 'r2')),
-             'DIV':     Instr(0x24, 3, ('m')),
-             'DIVF':    Instr(0x64, 3, ('m')),
-             'DIVR':    Instr(0x9C, 2, ('r1', 'r2')),
-             'FIX':     Instr(0xC4, 1, None),
-             'FLOAT':   Instr(0xC0, 1, None),
-             'HIO':     Instr(0xF4, 1, None),
-             'J':       Instr(0x3C, 3, ('m')),
-             'JEQ':     Instr(0x30, 3, ('m')),
-             'JGT':     Instr(0x34, 3, ('m')),
-             'JLT':     Instr(0x38, 3, ('m')),
-             'JSUB':    Instr(0x48, 3, ('m')),
-             'LDA':     Instr(0x00, 3, ('m')),
-             'LDB':     Instr(0x68, 3, ('m')),
-             'LDCH':    Instr(0x50, 3, ('m')),
-             'LDF':     Instr(0x70, 3, ('m')),
-             'LDL':     Instr(0x08, 3, ('m')),
-             'LDS':     Instr(0x6C, 3, ('m')),
-             'LDT':     Instr(0x74, 3, ('m')),
-             'LDX':     Instr(0x04, 3, ('m')),
-             'LPS':     Instr(0xD0, 3, ('m')),
-             'MULF':    Instr(0x60, 3, ('m')),
-             'MULR':    Instr(0x98, 2, ('r1', 'r2')),
-             'NORM':    Instr(0xC8, 1, None),
-             'OR':      Instr(0x44, 3, ('m')),
-             'RD':      Instr(0xD8, 3, ('m')),
-             'RMO':     Instr(0xAC, 2, ('r1', 'r2')),
-             'RSUB':    Instr(0x4C, 3, None),
-             'SHIFTL':  Instr(0xA4, 2, ('r1', 'n')),
-             'SHIFTR':  Instr(0xA8, 2, ('r1', 'n')),
-             'SIO':     Instr(0xF0, 1, None),
-             'SSK':     Instr(0xEC, 3, ('m')),
-             'STA':     Instr(0x0C, 3, ('m')),
-             'STB':     Instr(0x78, 3, ('m')),
-             'STCH':    Instr(0x54, 3, ('m')),
-             'STF':     Instr(0x80, 3, ('m')),
-             'STI':     Instr(0xD4, 3, ('m')),
-             'STL':     Instr(0x14, 3, ('m')),
-             'STS':     Instr(0x7C, 3, ('m')),
-             'STSW':    Instr(0xE8, 3, ('m')),
-             'STT':     Instr(0x84, 3, ('m')),
-             'STX':     Instr(0x10, 3, ('m')),
-             'SUB':     Instr(0x1C, 3, ('m')),
-             'SUBF':    Instr(0x5C, 3, ('m')),
-             'SUBR':    Instr(0x94, 2, ('r1', 'r2')),
-             'SVC':     Instr(0xB0, 2, ('n')),
-             'TD':      Instr(0xE0, 3, ('m')),
-             'TIO':     Instr(0xF8, 1, None),
-             'TIX':     Instr(0x2C, 3, ('m')),
-             'TIXR':    Instr(0xB8, 2, ('r1')),
-             'WD':      Instr(0xDC, 3, ('m'))
+op_table = { 'ADD':     Instr('18', 3, ['m']),
+             'ADDF':    Instr('58', 3, ['m']),
+             'ADDR':    Instr('90', 2, ['r1', 'r2']),
+             'AND':     Instr('40', 3, ['m']),
+             'CLEAR':   Instr('B4', 2, ['r1']),
+             'COMP':    Instr('28', 3, ['m']),
+             'COMPF':   Instr('88', 3, ['m']),
+             'COMPR':   Instr('A0', 2, ['r1', 'r2']),
+             'DIV':     Instr('24', 3, ['m']),
+             'DIVF':    Instr('64', 3, ['m']),
+             'DIVR':    Instr('9C', 2, ['r1', 'r2']),
+             'FIX':     Instr('C4', 1, None),
+             'FLOAT':   Instr('C0', 1, None),
+             'HIO':     Instr('F4', 1, None),
+             'J':       Instr('3C', 3, ['m']),
+             'JEQ':     Instr('30', 3, ['m']),
+             'JGT':     Instr('34', 3, ['m']),
+             'JLT':     Instr('38', 3, ['m']),
+             'JSUB':    Instr('48', 3, ['m']),
+             'LDA':     Instr('00', 3, ['m']),
+             'LDB':     Instr('68', 3, ['m']),
+             'LDCH':    Instr('50', 3, ['m']),
+             'LDF':     Instr('70', 3, ['m']),
+             'LDL':     Instr('08', 3, ['m']),
+             'LDS':     Instr('6C', 3, ['m']),
+             'LDT':     Instr('74', 3, ['m']),
+             'LDX':     Instr('04', 3, ['m']),
+             'LPS':     Instr('D0', 3, ['m']),
+             'MULF':    Instr('60', 3, ['m']),
+             'MULR':    Instr('98', 2, ['r1', 'r2']),
+             'NORM':    Instr('C8', 1, None),
+             'OR':      Instr('44', 3, ['m']),
+             'RD':      Instr('D8', 3, ['m']),
+             'RMO':     Instr('AC', 2, ['r1', 'r2']),
+             'RSUB':    Instr('4C', 3, None),
+             'SHIFTL':  Instr('A4', 2, ['r1', 'n']),
+             'SHIFTR':  Instr('A8', 2, ['r1', 'n']),
+             'SIO':     Instr('F0', 1, None),
+             'SSK':     Instr('EC', 3, ['m']),
+             'STA':     Instr('0C', 3, ['m']),
+             'STB':     Instr('78', 3, ['m']),
+             'STCH':    Instr('54', 3, ['m']),
+             'STF':     Instr('80', 3, ['m']),
+             'STI':     Instr('D4', 3, ['m']),
+             'STL':     Instr('14', 3, ['m']),
+             'STS':     Instr('7C', 3, ['m']),
+             'STSW':    Instr('E8', 3, ['m']),
+             'STT':     Instr('84', 3, ['m']),
+             'STX':     Instr('10', 3, ['m']),
+             'SUB':     Instr('1C', 3, ['m']),
+             'SUBF':    Instr('5C', 3, ['m']),
+             'SUBR':    Instr('94', 2, ['r1', 'r2']),
+             'SVC':     Instr('B0', 2, ['n']),
+             'TD':      Instr('E0', 3, ['m']),
+             'TIO':     Instr('F8', 1, None),
+             'TIX':     Instr('2C', 3, ['m']),
+             'TIXR':    Instr('B8', 2, ['r1']),
+             'WD':      Instr('DC', 3, ['m'])
            }
 
 
@@ -93,3 +96,249 @@ registers_table = {'A':  0,
                    'PC': 8,
                    "SW": 9
                   }
+
+
+def to_binary(hex_string):
+    return bin(int(str(hex_string), 16))[2:]
+
+
+def twos_complement(value, length):
+    if value < 0:
+        value = (1 << length) + value
+    out_format = '{:0%ib}' % length
+    
+    return out_format.format(value)
+
+
+class Format(object):
+    """ Base Instruction Format class. """
+    def generate(self):
+        raise NotImplementedError
+
+
+class Format1(Format):
+    """ Format 1 instruction class.
+
+         8
+     ==========
+    |    op    |
+     ==========
+
+    """
+    def __init__(self, mnemonic):
+        self._mnemonic = mnemonic
+
+    def generate(self):
+        """ Generate the machine code for the instruction. """
+        if self._mnemonic is None:
+            raise LineFieldsError(message="A mnemonic was not specified.")
+
+        output = ""
+
+        # lookup the opcode
+        opcode_lookup = op_table[self._mnemonic].opcode
+        stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
+        padded_opcode = stripped_opcode.zfill(2)
+        output += str(padded_opcode)
+
+        return self._mnemonic, None, output
+
+
+class Format2(Format):
+    """ Format 2 instruction class.
+
+         8       4     4
+     ======================
+    |    op    | r1 |  r2  |
+     ======================
+
+    """
+    def __init__(self, mnemonic, r1, r2):
+        self._mnemonic = mnemonic
+        self._r1 = r1
+        self._r2 = r2
+
+    def generate(self):
+        """ Generate the machine code for the instruction. """
+        if self._mnemonic is None:
+            raise LineFieldsError(message="A mnemonic was not specified.")
+
+        output = ""
+
+        # lookup the opcode
+        opcode_lookup = int(str(op_table[self._mnemonic].opcode), 16)
+        op = twos_complement(opcode_lookup, 8)
+        output += str(op)
+
+        # look up the registers
+        r1_lookup = registers_table[self._r1]
+        stripped_r1 = str(hex(r1_lookup)).lstrip("0x") or "0"
+        output += str(stripped_r1)
+
+        if self._r2 is not None:
+            r2_lookup = registers_table[self._r2]
+            stripped_r2 = str(hex(r2_lookup)).lstrip("0x") or "0"
+            output += str(stripped_r2)
+        else:
+            output += "0"
+
+        return self._mnemonic, (self._r1, self._r2), output
+
+
+class Format3(Format):
+    """ Format 3 instruction class.
+
+        6      1   1   1   1   1   1         12
+     =================================================
+    |   op   | n | i | x | b | p | e |      disp      |
+     =================================================
+
+    """
+    def __init__(self, base, symtab, flags, source_line):
+        self._base = base
+        self._symtab = symtab
+
+        self._location = source_line.location
+        
+        self._mnemonic = source_line.mnemonic
+        self._flags, self._n, self._i = flags
+        self._disp = source_line.operand
+        self._line_number = source_line.line_number
+        self._contents = source_line
+
+    def generate(self):
+        """ Generate the machine code for the instruction. """
+        if self._mnemonic is None:
+            raise LineFieldsError(message="A mnemonic was not specified.")
+
+        output = ""
+
+        # op
+        opcode_lookup = int(str(op_table[self._mnemonic].opcode), 16)
+
+        if self._n:
+            opcode_lookup += 2
+        if self._i:
+            opcode_lookup += 1
+        op = twos_complement(opcode_lookup, 6)
+
+        is_digit = False
+        has_operands = False
+
+        if self._disp is not None and not assembler.literal(self._disp):
+            has_operands = True
+            if assembler.indexed(self._disp):
+                self._disp = self._disp[:len(self._disp)-2]
+                symbol_address = self._symtab.get(self._disp)
+            elif assembler.indirect(self._disp):
+                self._disp = self._disp[1:]
+                symbol_address = self._symtab.get(self._disp)
+            elif assembler.immediate(self._disp):
+                self._disp = self._disp[1:]
+                if str(self._disp).isdigit():
+                    symbol_address = self._disp
+                    is_digit = True
+                else:
+                    symbol_address = self._symtab.get(self._disp)
+            else:
+                symbol_address = self._symtab.get(self._disp)
+
+            if symbol_address is not None:
+                self._disp = symbol_address
+            else:
+                self._disp = 0
+                raise UndefinedSymbolError(
+                        message='Undefined symbol on line: ' +
+                        str(self._line_number+1), code=1,
+                        contents=self._contents)
+        #TODO: process the literal here in an elif
+        else:
+            self._disp = 0
+
+        if not is_digit and has_operands:
+            # Try PC relative then base relative, or raise an error
+            if (-2048 <= self.__pc_relative() <= 2047):
+                self._flags += flag_table['p']
+                disp = twos_complement(self.__pc_relative(), 12)
+            elif(0 <= self.__base_relative() <= 4095):  # change back to 4095
+                self._flags += flag_table['b']
+                disp = to_binary(self.__base_relative()).zfill(12)
+            else:
+                print self._contents
+                raise InstructionError(
+                    message="Neither PC or Base relative addressing could " +
+                            "be used."
+                )
+        else:
+            disp = twos_complement(int(self._disp), 12)
+
+        # flags
+        flags = to_binary(hex(self._flags))
+
+        # combine each section
+        output += op
+        output += flags.zfill(4)
+        output += disp
+
+        hex_output = hex(int(output, 2))[2:].zfill(6).upper()
+
+        return self._mnemonic, self._disp, hex_output
+
+    def __pc_relative(self):
+        """ Calculate the PC relative address. """
+        pc = int(str(self._disp), 16) - 3
+        disp = int(self._location)
+        return pc - disp
+
+    def __base_relative(self):
+        """ Calculate the Base relative address. """
+        if self._base is None:
+            raise InstructionError(message="BASE directive not set")
+        base = int(str(self._base), 16)
+        disp = int(str(self._disp), 16)
+
+        return disp - base 
+
+
+#TODO: make this work correctly, with flags
+class Format4(Format):
+    """ Format 4 instruction class.
+
+        6      1   1   1   1   1   1              20
+     ============================================================
+    |   op   | n | i | x | b | p | e |          address          |
+     ============================================================
+
+    """
+    def __init__(self, flags, mnemonic, operand):
+        self._flags = flags
+        self._mnemonic = mnemonic
+        self._operand = operand
+
+    def generate(self):
+        """ Generate the machine code for the instruction. """
+        if self._opcode is None:
+            raise LineFieldsError(message="An opcode was not specified.")
+
+        output = ""
+
+        # lookup the opcode
+        opcode_lookup = op_table[self._opcode].opcode
+        stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
+        padded_opcode = stripped_opcode.zfill(2)
+        output += str(padded_opcode)
+
+        # look up the address in symtab
+        if self._address is not None:
+            stripped_address = str(self._address).lstrip("0x") or "0"
+            padded_address = stripped_address.zfill(4)
+            output += str(padded_address)
+            #output += str(self._symtab[self._address])
+        else:
+            output += "0000"
+
+        return self._opcode, self._address, output
+
+
+def step():
+    raw_input(">>")

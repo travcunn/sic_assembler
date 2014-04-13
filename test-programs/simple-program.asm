@@ -29,7 +29,7 @@
              RD     INPUT
              COMP   ZERO
              JEQ    EXIT
-             STCH   BUFFER
+             STCH   BUFFER,X
              TIX    MAXLEN
              JLT    RLOOP
       EXIT   STX    LENGTH
@@ -42,7 +42,7 @@
       WRREC  LDX    ZERO
       WLOOP  TD     OUTPUT
              JEQ    WLOOP
-             LDCH   BUFFER
+             LDCH   BUFFER,X
              WD     OUTPUT
              TIX    LENGTH
              JLT    WLOOP
