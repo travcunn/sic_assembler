@@ -1,24 +1,53 @@
 SIC/XE Assembler
 ================
 
-The SIC machine is a hypothetical computer system that can be found in "System Software: An Introduction to Systems Programming", by Leland Beck.
+> The SIC machine is a hypothetical computer system that can be found in "System Software: An Introduction to Systems Programming", by Leland Beck.
 
-This is a 2 pass SIC/XE assembler.
+This is a 2 pass SIC/XE assembler implemented in Python.
+
+###### Written by Travis Cunningham and Ashli Elrod
+
 
 TODO
+----
+- [Required Features](https://github.com/travcunn/sic_assembler/issues?labels=required-feature&page=1&state=open)
+- [Future Enhancements](https://github.com/travcunn/sic_assembler/issues?labels=enhancement&page=1&state=open)
+
+
+Requirements
 ------------
-https://github.com/travcunn/sic_assembler/issues?labels=required-feature&page=1&state=open
+    Python 2.7+
+
+This module has not been tested with Python 3.
 
 
 Installation
 ------------
+It is helpful to use [virtualenv](https://pypi.python.org/pypi/virtualenv) to create an isolated Python environment.
 
-Via source code / GitHub:
+###### Via source code / GitHub:
+
+##### Standard Installation
 
     $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
     $ cd sic_assembler
     $ python setup.py install
     
+##### Standard Installation for underprivileged user accounts
+> If you are not using [virtualenv](https://pypi.python.org/pypi/virtualenv) and have an underprileged account, it will not be possible to install the module correctly. Fortunately, it is still possible to run the module, since it doesn't depend on any external modules outside of the Python standard library.
+
+    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
+    $ cd sic_assembler/sic_assembler
+    $ python __init__.py ../test-programs/page58.asm
+    
+##### Development Installation
+> This requires one extra command, which will install any extra dependencies that are used in development.
+
+    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
+    $ cd sic_assembler
+    $ pip install -r requirements.txt
+    $ python setup.py develop
+
 
 Usage
 -----
@@ -56,8 +85,8 @@ Usage
 ```
 
 
-Command Line
-------------
+Command Line Usage
+------------------
 Included is a command line utility for assembling source files, which can be run after installing the package:
 
     $ sic-assembler ./my-program.asm
@@ -66,7 +95,7 @@ Or specify an output file:
 
     $ sic-assembler ./my-program.asm -o outfile
     
-You can also pipe things around:
+You can also [pipe](http://www.linfo.org/pipes.html) things around:
 
     $ cat my-program.asm | sic-assembler > outfile
 
@@ -76,6 +105,10 @@ Testing
 Run all of the tests:
 
     $ python tests.py
+    
+Run a single test called "TestInstructionGeneration":
+
+    $ python tests.py TestInstructionGeneration
 
 
 Useful development links
