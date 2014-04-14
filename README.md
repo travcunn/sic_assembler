@@ -23,7 +23,7 @@ This module has not been tested with Python 3.
 
 Installation
 ------------
-It is helpful to use [virtualenv](https://pypi.python.org/pypi/virtualenv) to create an isolated Python environment.
+It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) to create an isolated Python environment.
 
 ###### Via source code / GitHub:
 
@@ -34,7 +34,7 @@ It is helpful to use [virtualenv](https://pypi.python.org/pypi/virtualenv) to cr
     $ python setup.py install
     
 ##### Standard Installation for underprivileged user accounts
-> If you are not using [virtualenv](https://pypi.python.org/pypi/virtualenv) and have an underprileged account, it will not be possible to install the module correctly. Fortunately, it is still possible to run the module, since it doesn't depend on any external modules outside of the Python standard library.
+> If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and have an underprileged account, it will not be possible to install the module correctly. Fortunately, it is still possible to run the module, since it doesn't depend on any external modules outside of the Python standard library.
 
     $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
     $ cd sic_assembler/sic_assembler
