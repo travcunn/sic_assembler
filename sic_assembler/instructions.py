@@ -1,17 +1,24 @@
-# Important Bookmarks:
-# Page 50: Assembler Algorithm and Data Structures
-# Page 8/9 and 498: Instruction Formats
-# Page 496: Instructions
-import assembler
 from errors import InstructionError, LineFieldsError, UndefinedSymbolError
 
 
 class Instr(object):
     """ Represents a single instruction. """
     def __init__(self, opcode, format, operands):
-        self.opcode = opcode
-        self.format = format
-        self.operands = operands
+        self.__opcode = opcode
+        self.__format = format
+        self.__operands = operands
+
+    @property
+    def opcode(self):
+        return self.__opcode
+
+    @property
+    def format(self):
+        return self.__format
+
+    @property
+    def operands(self):
+        return self.__operands
 
 
 # Operation code table, found on page 496
@@ -96,6 +103,18 @@ registers_table = {'A':  0,
                    'PC': 8,
                    "SW": 9
                   }
+
+
+# Indexed addressing
+indexed = lambda x: str(x).endswith(',X')
+# Indirect addressing
+indirect = lambda x: str(x).startswith('@')
+# An immediate operand
+immediate = lambda x: str(x).startswith('#')
+# An extended format instruction
+extended = lambda x: str(x).startswith('+')
+# Literal
+literal = lambda x: str(x).startswith('=')
 
 
 def to_binary(hex_string):
@@ -194,14 +213,14 @@ class Format3(Format):
      =================================================
 
     """
-    def __init__(self, base, symtab, flags, source_line):
+    def __init__(self, base, symtab, source_line):
         self._base = base
         self._symtab = symtab
 
         self._location = source_line.location
         
         self._mnemonic = source_line.mnemonic
-        self._flags, self._n, self._i = flags
+        self._flags, self._n, self._i = determine_flags(source_line)
         self._disp = source_line.operand
         self._line_number = source_line.line_number
         self._contents = source_line
@@ -225,15 +244,15 @@ class Format3(Format):
         is_digit = False
         has_operands = False
 
-        if self._disp is not None and not assembler.literal(self._disp):
+        if self._disp is not None and not literal(self._disp):
             has_operands = True
-            if assembler.indexed(self._disp):
+            if indexed(self._disp):
                 self._disp = self._disp[:len(self._disp)-2]
                 symbol_address = self._symtab.get(self._disp)
-            elif assembler.indirect(self._disp):
+            elif indirect(self._disp):
                 self._disp = self._disp[1:]
                 symbol_address = self._symtab.get(self._disp)
-            elif assembler.immediate(self._disp):
+            elif immediate(self._disp):
                 self._disp = self._disp[1:]
                 if str(self._disp).isdigit():
                     symbol_address = self._disp
@@ -297,7 +316,10 @@ class Format3(Format):
         base = int(str(self._base), 16)
         disp = int(str(self._disp), 16)
 
-        return disp - base 
+        return disp - base
+
+    def __repr__(self):
+        return "<Format3: %s>" % (self.generate(),)
 
 
 #TODO: make this work correctly, with flags
@@ -338,6 +360,35 @@ class Format4(Format):
             output += "0000"
 
         return self._opcode, self._address, output
+
+
+def determine_flags(source_line):
+    """ Calculate the flags given a SourceLine object. """
+    
+    # initially there are no flags set
+    flags = 0
+    n = False
+    i = False
+
+    if immediate(source_line.operand):
+        i = True
+    elif indirect(source_line.operand):
+        n = True
+    else:
+        n, i = True, True
+
+    if indexed(source_line.operand):
+        if not n and not i:
+            raise LineFieldsError(
+                    message="Indexed addressing cannot be used with" \
+                            "immediate or indirect addressing modes.")
+        else:
+            flags += flag_table['x']
+
+    if extended(source_line.mnemonic):
+        flags += flag_table['e']
+
+    return flags, n, i
 
 
 def step():

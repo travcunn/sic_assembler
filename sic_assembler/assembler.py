@@ -1,23 +1,12 @@
 from errors import DuplicateSymbolError, LineFieldsError, OpcodeLookupError
 from instructions import Format1, Format2, Format3, Format4
-from instructions import flag_table, op_table
+from instructions import extended, op_table
 
 
 # A comment
 comment = lambda x: x.split()[0].startswith('.')
 # A blank line
 blank_line = lambda x: len(x.split()) == 0
-
-# Indexed addressing
-indexed = lambda x: str(x).endswith(',X')
-# Indirect addressing
-indirect = lambda x: str(x).startswith('@')
-# An immediate operand
-immediate = lambda x: str(x).startswith('#')
-# An extended format instruction
-extended = lambda x: str(x).startswith('+')
-# Literal
-literal = lambda x: str(x).startswith('=')
 
 
 class SourceLine(object):
@@ -207,43 +196,12 @@ class Assembler(object):
         #TODO: make format 3 and 4 work properly
 
         elif instr_format is 3:
-            flags = determine_flags(source_line)
             instruction = Format3(base=self.base, symtab=self.symtab,
-                                  flags=flags, source_line=source_line)
+                                  source_line=source_line)
         elif instr_format is 4:
-            flags = determine_flags(source_line)
-            instruction = Format4(flags=flags, source_line=source_line)
+            instruction = Format4(source_line=source_line)
 
         return instruction.generate()
-
-
-def determine_flags(source_line):
-    """ Calculate the flags given a SourceLine object. """
-    
-    # initially there are no flags set
-    flags = 0
-    n = False
-    i = False
-
-    if immediate(source_line.operand):
-        i = True
-    elif indirect(source_line.operand):
-        n = True
-    else:
-        n, i = True, True
-
-    if indexed(source_line.operand):
-        if not n and not i:
-            raise LineFieldsError(
-                    message="Indexed addressing cannot be used with" \
-                            "immediate or indirect addressing modes.")
-        else:
-            flags += flag_table['x']
-
-    if extended(source_line.mnemonic):
-        flags += flag_table['e']
-
-    return flags, n, i
 
 
 def base_mnemonic(mnemonic):

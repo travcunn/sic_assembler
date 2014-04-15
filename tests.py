@@ -1,7 +1,8 @@
 import unittest
 
 from sic_assembler import assembler
-from sic_assembler.assembler import Assembler, SourceLine, determine_flags
+from sic_assembler import instructions
+from sic_assembler.assembler import Assembler, SourceLine
 from sic_assembler.instructions import Format3
 
 
@@ -20,33 +21,33 @@ class TestFieldTypes(unittest.TestCase):
 
     def test_indexed_addressing(self):
         indexed_operand = "BUFFER,X"
-        self.assertTrue(assembler.indexed(indexed_operand))
+        self.assertTrue(instructions.indexed(indexed_operand))
         invalid_syntax = "BUFFER, X"
-        self.assertFalse(assembler.indexed(invalid_syntax))
+        self.assertFalse(instructions.indexed(invalid_syntax))
 
     def test_indirect_addressing(self):
         indirect_operand = "@RETADR"
-        self.assertTrue(assembler.indirect(indirect_operand))
+        self.assertTrue(instructions.indirect(indirect_operand))
         non_indirect_operand = "RETADR"
-        self.assertFalse(assembler.indirect(non_indirect_operand))
+        self.assertFalse(instructions.indirect(non_indirect_operand))
 
     def test_immediate_operand(self):
         operand = "#3355"
-        self.assertTrue(assembler.immediate(operand))
+        self.assertTrue(instructions.immediate(operand))
         non_immediate = "ZERO"
-        self.assertFalse(assembler.immediate(non_immediate))
+        self.assertFalse(instructions.immediate(non_immediate))
 
     def test_extended(self):
         opcode = "+LDT"
-        self.assertTrue(assembler.extended(opcode))
+        self.assertTrue(instructions.extended(opcode))
         non_extended = "LDT"
-        self.assertFalse(assembler.extended(non_extended))
+        self.assertFalse(instructions.extended(non_extended))
 
     def test_literal(self):
         literal = "=X'05'"
-        self.assertTrue(assembler.literal(literal))
+        self.assertTrue(instructions.literal(literal))
         non_literal = "X"
-        self.assertFalse(assembler.literal(non_literal))
+        self.assertFalse(instructions.literal(non_literal))
 
 
 class TestSimpleAssemblyFile(unittest.TestCase):
@@ -75,9 +76,8 @@ class TestInstructionGeneration(unittest.TestCase):
         source_line = SourceLine.parse(line, 1)
         source_line.location = 0
 
-        flags = determine_flags(source_line)
         instruction = Format3(base=None, symtab=symtab,
-                              flags=flags, source_line=source_line)
+                              source_line=source_line)
         
         results = instruction.generate()
 
@@ -93,9 +93,8 @@ class TestInstructionGeneration(unittest.TestCase):
         source_line = SourceLine.parse(line, 2)
         source_line.location = 3
 
-        flags = determine_flags(source_line)
         instruction = Format3(base=None, symtab=symtab,
-                              flags=flags, source_line=source_line)
+                              source_line=source_line)
         
         results = instruction.generate()
 
@@ -113,9 +112,8 @@ class TestInstructionGeneration(unittest.TestCase):
 
         base = hex(51)
 
-        flags = determine_flags(source_line)
         instruction = Format3(base=base, symtab=symtab,
-                              flags=flags, source_line=source_line)
+                              source_line=source_line)
         
         results = instruction.generate()
 

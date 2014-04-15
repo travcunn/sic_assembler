@@ -119,3 +119,6 @@ http://www-rohan.sdsu.edu/~stremler/2003_CS530/SicArchitecture.html
 http://www.unf.edu/~cwinton/html/cop3601/s10/class.notes/basic4-SICfmts.pdf
 
 http://cis.csuohio.edu/~jackie/cis335/sicxe_address.txt
+
+Littab information: 
+http://www.ut.edu.sa/documents/10156/1897914/Chapter+17-18

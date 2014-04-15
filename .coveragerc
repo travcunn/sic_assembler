@@ -3,6 +3,7 @@ omit =
     tests.py
 include =
     sic_assembler/assembler.py
+    sic_assembler/instructions.py
 
 
 [report]
