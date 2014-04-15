@@ -3,7 +3,7 @@ import unittest
 from sic_assembler import assembler
 from sic_assembler import instructions
 from sic_assembler.assembler import Assembler, SourceLine
-from sic_assembler.instructions import Format2, Format3
+from sic_assembler.instructions import Format2, Format3, Format4
 
 
 class TestFieldTypes(unittest.TestCase):
@@ -93,11 +93,11 @@ class TestInstructionGeneration(unittest.TestCase):
         symtab = dict()
 
         # add a symbol to the symbol table for lookup
-        symtab['RETADR'] = hex(48)
+        symtab['RETADR'] = '30'
 
         line = "FIRST   STL     RETADR"
         source_line = SourceLine.parse(line, 1)
-        source_line.location = 0
+        source_line.location = int('0000', 16)
 
         instruction = Format3(base=None, symtab=symtab,
                               source_line=source_line)
@@ -110,11 +110,11 @@ class TestInstructionGeneration(unittest.TestCase):
         symtab = dict()
 
         # add a symbol to the symbol table for lookup
-        symtab['LENGTH'] = hex(51)
+        symtab['LENGTH'] = '33'
 
         line = "LDB     #LENGTH"
         source_line = SourceLine.parse(line, 2)
-        source_line.location = 3
+        source_line.location = int('0003', 16)
 
         instruction = Format3(base=None, symtab=symtab,
                               source_line=source_line)
@@ -123,11 +123,11 @@ class TestInstructionGeneration(unittest.TestCase):
 
         self.assertTrue(results[2] == "69202D")
     
-    def test_base_relative_with_indexing(self):
+    def test_format_3_base_relative_with_indexing(self):
         symtab = dict()
 
         # add a symbol to the symbol table for lookup
-        symtab['BUFFER'] = hex(54)
+        symtab['BUFFER'] = '36'
 
         line = "STCH    BUFFER,X"
         source_line = SourceLine.parse(line, 1)
@@ -141,6 +141,53 @@ class TestInstructionGeneration(unittest.TestCase):
         results = instruction.generate()
 
         self.assertTrue(results[2] == "57C003")
+
+    def test_format_4_simple(self):
+        symtab = dict()
+
+        # add a symbol to the symbol table for lookup
+        symtab['RDREC'] = '1036'
+
+        line = "+JSUB   RDREC"
+        source_line = SourceLine.parse(line, 4)
+        source_line.location = int('0006', 16)
+
+        instruction = Format4(symtab=symtab, source_line=source_line)
+        
+        results = instruction.generate()
+
+        self.assertTrue(results[2] == "4B101036")
+
+    def test_format_4_immediate_value(self):
+        symtab = dict()
+
+        line = "+LDT   #4096"
+        source_line = SourceLine.parse(line, 1)
+        source_line.location = int('103C', 16)
+
+        instruction = Format4(symtab=symtab, source_line=source_line)
+        
+        results = instruction.generate()
+
+        self.assertTrue(results[2] == "75101000")
+
+    def test_format_4_immediate_lookup_value(self):
+        symtab = dict()
+
+        # add a symbol to the symbol table for lookup
+        symtab['MAXLEN'] = '1000'
+
+        line = "+LDT   #MAXLEN"
+        source_line = SourceLine.parse(line, 1)
+        source_line.location = int('103C', 16)
+
+        instruction = Format4(symtab=symtab, source_line=source_line)
+        
+        results = instruction.generate()
+
+        self.assertTrue(results[2] == "75101000")
+
+
 
 
 if __name__ == '__main__':

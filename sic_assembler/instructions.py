@@ -321,7 +321,6 @@ class Format3(Format):
         return "<Format3: %s>" % (self.generate(),)
 
 
-#TODO: make this work correctly, with flags
 class Format4(Format):
     """ Format 4 instruction class.
 
@@ -329,36 +328,72 @@ class Format4(Format):
      ============================================================
     |   op   | n | i | x | b | p | e |          address          |
      ============================================================
-
     """
-    def __init__(self, flags, mnemonic, operand):
-        self._flags = flags
-        self._mnemonic = mnemonic
-        self._operand = operand
+    def __init__(self, symtab, source_line):
+        self._symtab = symtab
+
+        self._location = source_line.location
+        
+        self._mnemonic = source_line.mnemonic[1:]
+        self._flags, self._n, self._i = determine_flags(source_line)
+        self._disp = source_line.operand
+        self._line_number = source_line.line_number
+        self._contents = source_line
 
     def generate(self):
         """ Generate the machine code for the instruction. """
-        if self._opcode is None:
-            raise LineFieldsError(message="An opcode was not specified.")
+        if self._mnemonic is None:
+            raise LineFieldsError(message="A mnemonic was not specified.")
 
         output = ""
 
-        # lookup the opcode
-        opcode_lookup = op_table[self._opcode].opcode
-        stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
-        padded_opcode = stripped_opcode.zfill(2)
-        output += str(padded_opcode)
+        # op
+        opcode_lookup = int(str(op_table[self._mnemonic].opcode), 16)
 
-        # look up the address in symtab
-        if self._address is not None:
-            stripped_address = str(self._address).lstrip("0x") or "0"
-            padded_address = stripped_address.zfill(4)
-            output += str(padded_address)
-            #output += str(self._symtab[self._address])
+        if self._n:
+            opcode_lookup += 2
+        if self._i:
+            opcode_lookup += 1
+        op = twos_complement(opcode_lookup, 6)
+
+        if self._disp is not None and not literal(self._disp):
+            if immediate(self._disp):
+                self._disp = self._disp[1:]
+                if str(self._disp).isdigit():
+                    symbol_address = hex(int(self._disp))[2:]
+                else:
+                    symbol_address = self._symtab.get(self._disp)
+            else:
+                symbol_address = self._symtab.get(self._disp)
+
+            if symbol_address is not None:
+                self._disp = symbol_address
+            else:
+                self._disp = 0
+                raise UndefinedSymbolError(
+                        message='Undefined symbol on line: ' +
+                        str(self._line_number+1), code=1,
+                        contents=self._contents)
+        #TODO: process the literal here in an elif
         else:
-            output += "0000"
+            self._disp = 0
 
-        return self._opcode, self._address, output
+        disp = twos_complement(int(self._disp, 16), 20)
+
+        # flags
+        flags = to_binary(hex(self._flags))
+
+        # combine each section
+        output += op
+        output += flags.zfill(4)
+        output += disp
+
+        hex_output = hex(int(output, 2))[2:].zfill(6).upper()
+
+        return self._mnemonic, self._disp, hex_output
+
+    def __repr__(self):
+        return "<Format4: %s>" % (self.generate(),)
 
 
 def determine_flags(source_line):

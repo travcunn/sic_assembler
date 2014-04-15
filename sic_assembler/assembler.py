@@ -141,7 +141,7 @@ class Assembler(object):
         object_code = []
 
         for source_line in self.temp_contents:
-            found_opcode = op_table.get(source_line.mnemonic)
+            found_opcode = op_table.get(base_mnemonic(source_line.mnemonic))
             if found_opcode:
                 # determine the instruction format
                 instr_format = determine_format(source_line.mnemonic)
@@ -192,14 +192,11 @@ class Assembler(object):
                 r1, r2 = source_line.operand, None
             instruction = Format2(mnemonic=source_line.mnemonic,
                                   r1=r1, r2=r2)
-
-        #TODO: make format 3 and 4 work properly
-
         elif instr_format is 3:
             instruction = Format3(base=self.base, symtab=self.symtab,
                                   source_line=source_line)
         elif instr_format is 4:
-            instruction = Format4(source_line=source_line)
+            instruction = Format4(symtab=self.symtab, source_line=source_line)
 
         return instruction.generate()
 
