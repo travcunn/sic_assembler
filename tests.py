@@ -3,7 +3,7 @@ import unittest
 from sic_assembler import assembler
 from sic_assembler import instructions
 from sic_assembler.assembler import Assembler, SourceLine
-from sic_assembler.instructions import Format3
+from sic_assembler.instructions import Format2, Format3
 
 
 class TestFieldTypes(unittest.TestCase):
@@ -52,7 +52,7 @@ class TestFieldTypes(unittest.TestCase):
 
 class TestSimpleAssemblyFile(unittest.TestCase):
     def test_simple_assembly(self):
-        # test the object code generation from page 47 in the book
+        # test the object code generation from page 58 in the book
         test_file = file('test-programs/page58.asm')
         a = Assembler(test_file)
 
@@ -66,6 +66,29 @@ class TestSimpleAssemblyFile(unittest.TestCase):
 
 
 class TestInstructionGeneration(unittest.TestCase):
+    def test_format_2_one_register(self):
+        line = "TIXR    T"
+        source_line = SourceLine.parse(line, 1)
+
+        instruction = Format2(mnemonic=source_line.mnemonic,
+                              r1=source_line.operand, r2=None)
+        
+        results = instruction.generate()
+
+        self.assertTrue(results[2] == "B850")
+
+    def test_format_2_two_registers(self):
+        line = "COMPR   A,S"
+        source_line = SourceLine.parse(line, 1)
+
+        r1, r2 = source_line.operand.split(',')
+        instruction = Format2(mnemonic=source_line.mnemonic,
+                              r1=r1, r2=r2)
+
+        results = instruction.generate()
+
+        self.assertTrue(results[2] == "A004")
+
     def test_format_3_simple(self):
         symtab = dict()
 
@@ -118,7 +141,6 @@ class TestInstructionGeneration(unittest.TestCase):
         results = instruction.generate()
 
         self.assertTrue(results[2] == "57C003")
-
 
 
 if __name__ == '__main__':

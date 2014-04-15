@@ -185,9 +185,8 @@ class Format2(Format):
         output = ""
 
         # lookup the opcode
-        opcode_lookup = int(str(op_table[self._mnemonic].opcode), 16)
-        op = twos_complement(opcode_lookup, 8)
-        output += str(op)
+        opcode_lookup = op_table[self._mnemonic].opcode
+        output += str(opcode_lookup)
 
         # look up the registers
         r1_lookup = registers_table[self._r1]
@@ -279,7 +278,7 @@ class Format3(Format):
             if (-2048 <= self.__pc_relative() <= 2047):
                 self._flags += flag_table['p']
                 disp = twos_complement(self.__pc_relative(), 12)
-            elif(0 <= self.__base_relative() <= 4095):  # change back to 4095
+            elif(0 <= self.__base_relative() <= 4095):
                 self._flags += flag_table['b']
                 disp = to_binary(self.__base_relative()).zfill(12)
             else:
