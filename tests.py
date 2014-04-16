@@ -61,8 +61,48 @@ class TestSimpleAssemblyFile(unittest.TestCase):
 
         a.second_pass()
 
-        for x in a.generated_objects:
-            print x
+        expected_objects = [('STL', '0x30', '17202D'),
+                            ('LDB', '0x33', '69202D'),
+                            ('JSUB', '0x1036', '4B101036'),
+                            ('LDA', '0x33', '032026'),
+                            ('COMP', '0', '290000'),
+                            ('JEQ', '0x1a', '332007'),
+                            ('JSUB', '0x105d', '4B10105D'),
+                            ('J', '0x6', '3F2FEC'),
+                            ('LDA', '0x2d', '032010'),
+                            ('STA', '0x36', '0F2016'),
+                            ('LDA', '3', '010003'),
+                            ('STA', '0x33', '0F200D'),
+                            ('JSUB', '0x105d', '4B10105D'),
+                            ('J', '0x30', '3E2003'),
+                            ('BYTE', "C'EOF'", '454f46'),
+                            ('CLEAR', ('X', None), 'B410'),
+                            ('CLEAR', ('A', None), 'B400'),
+                            ('CLEAR', ('S', None), 'B440'),
+                            ('LDT', '1000', '75101000'),
+                            ('TD', '0x105c', 'E32019'),
+                            ('JEQ', '0x1040', '332FFA'),
+                            ('RD', '0x105c', 'DB2013'),
+                            ('COMPR', ('A', 'S'), 'A004'),
+                            ('JEQ', '0x1056', '332008'),
+                            ('STCH', '0x36', '57C003'),
+                            ('TIXR', ('T', None), 'B850'),
+                            ('JLT', '0x1040', '3B2FEA'),
+                            ('STX', '0x33', '134000'),
+                            ('RSUB', 0, '4F0000'),
+                            ('BYTE', "X'F1'", 'F1'),
+                            ('CLEAR', ('X', None), 'B410'),
+                            ('LDT', '0x33', '774000'),
+                            ('TD', '0x1076', 'E32011'),
+                            ('JEQ', '0x1062', '332FFA'),
+                            ('LDCH', '0x36', '53C003'),
+                            ('WD', '0x1076', 'DF2008'),
+                            ('TIXR', ('T', None), 'B850'),
+                            ('JLT', '0x1062', '3B2FEF'),
+                            ('RSUB', 0, '4F0000'),
+                            ('BYTE', "X'05'", '05')]
+
+        self.assertTrue(a.generated_objects == expected_objects)
 
 
 class TestInstructionGeneration(unittest.TestCase):

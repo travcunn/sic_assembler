@@ -282,7 +282,6 @@ class Format3(Format):
                 self._flags += flag_table['b']
                 disp = to_binary(self.__base_relative()).zfill(12)
             else:
-                print self._contents
                 raise InstructionError(
                     message="Neither PC or Base relative addressing could " +
                             "be used."
@@ -316,9 +315,6 @@ class Format3(Format):
         disp = int(str(self._disp), 16)
 
         return disp - base
-
-    def __repr__(self):
-        return "<Format3: %s>" % (self.generate(),)
 
 
 class Format4(Format):
@@ -391,9 +387,6 @@ class Format4(Format):
         hex_output = hex(int(output, 2))[2:].zfill(6).upper()
 
         return self._mnemonic, self._disp, hex_output
-
-    def __repr__(self):
-        return "<Format4: %s>" % (self.generate(),)
 
 
 def determine_flags(source_line):
