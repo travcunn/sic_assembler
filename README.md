@@ -75,8 +75,6 @@ _This module has not been tested with Python 3._
 
 It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) to create an isolated Python environment.
 
-###### Via source code / GitHub:
-
 ##### Standard Installation
 
     $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
