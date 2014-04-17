@@ -7,6 +7,9 @@ from sic_assembler.instructions import Format2, Format3, Format4
 
 
 class TestFieldTypes(unittest.TestCase):
+    """ 
+    Test each of the methods for parsing the source program.
+    """
     def test_comment(self):
         comment_line = ".     SUBROUTINE TO WRITE RECORD FROM BUFFER"
         self.assertTrue(assembler.comment(comment_line))
@@ -51,6 +54,9 @@ class TestFieldTypes(unittest.TestCase):
 
 
 class TestSimpleAssemblyFile(unittest.TestCase):
+    """
+    Test simple programs and check the generated objects.
+    """
     def test_simple_assembly(self):
         # test the object code generation from page 58 in the book
         test_file = file('test-programs/page58.asm')
@@ -106,6 +112,9 @@ class TestSimpleAssemblyFile(unittest.TestCase):
 
 
 class TestInstructionGeneration(unittest.TestCase):
+    """
+    Test instruction generation for each instruction format.
+    """
     def test_format_2_one_register(self):
         line = "TIXR    T"
         source_line = SourceLine.parse(line, 1)
