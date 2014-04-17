@@ -198,7 +198,7 @@ class Assembler(object):
         elif instr_format is 4:
             instruction = Format4(symtab=self.symtab, source_line=source_line)
 
-        return instruction.generate()
+        return instruction
 
 
 def base_mnemonic(mnemonic):

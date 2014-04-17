@@ -4,6 +4,7 @@ omit =
 include =
     sic_assembler/assembler.py
     sic_assembler/instructions.py
+    sic_assembler/records.py
 
 
 [report]

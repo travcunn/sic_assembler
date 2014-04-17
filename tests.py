@@ -64,7 +64,7 @@ class TestSimpleAssemblyFile(unittest.TestCase):
         self.a.first_pass()
         self.a.second_pass()
 
-    def test_simple_assembly_objects(self):
+    def test_output_objects(self):
         generated_code = []
 
         for x in self.a.generated_objects:
@@ -83,6 +83,17 @@ class TestSimpleAssemblyFile(unittest.TestCase):
                          'B850', '3B2FEF', '4F0000', '05']
 
         self.assertTrue(generated_code == expected_code)
+
+    def test_output_records(self):
+        generated_code = []
+
+        for x in self.a.generated_objects:
+            if isinstance(x, Format):
+                generated_code.append(x.generate()[2])
+            else:
+                generated_code.append(x[2])
+
+
 
 
 class TestInstructionGeneration(unittest.TestCase):
