@@ -3,7 +3,8 @@ import unittest
 from sic_assembler import assembler
 from sic_assembler import instructions
 from sic_assembler.assembler import Assembler, SourceLine
-from sic_assembler.instructions import Format2, Format3, Format4
+from sic_assembler.instructions import Format
+from sic_assembler.instructions import  Format1, Format2, Format3, Format4
 
 
 class TestFieldTypes(unittest.TestCase):
@@ -55,66 +56,49 @@ class TestFieldTypes(unittest.TestCase):
 
 class TestSimpleAssemblyFile(unittest.TestCase):
     """
-    Test simple programs and check the generated objects.
+    Test simple programs and check the generated objects and records.
     """
-    def test_simple_assembly(self):
+    def setUp(self):
         # test the object code generation from page 58 in the book
-        test_file = file('test-programs/page58.asm')
-        a = Assembler(test_file)
+        self.a = Assembler(open('test-programs/page58.asm', 'r'))
+        self.a.first_pass()
+        self.a.second_pass()
 
-        # lets step through each pass separately
-        a.first_pass()
+    def test_simple_assembly_objects(self):
+        generated_code = []
 
-        a.second_pass()
+        for x in self.a.generated_objects:
+            if isinstance(x, Format):
+                generated_code.append(x.generate()[2])
+            else:
+                generated_code.append(x[2])
 
-        expected_objects = [('STL', '0x30', '17202D'),
-                            ('LDB', '0x33', '69202D'),
-                            ('JSUB', '0x1036', '4B101036'),
-                            ('LDA', '0x33', '032026'),
-                            ('COMP', '0', '290000'),
-                            ('JEQ', '0x1a', '332007'),
-                            ('JSUB', '0x105d', '4B10105D'),
-                            ('J', '0x6', '3F2FEC'),
-                            ('LDA', '0x2d', '032010'),
-                            ('STA', '0x36', '0F2016'),
-                            ('LDA', '3', '010003'),
-                            ('STA', '0x33', '0F200D'),
-                            ('JSUB', '0x105d', '4B10105D'),
-                            ('J', '0x30', '3E2003'),
-                            ('BYTE', "C'EOF'", '454f46'),
-                            ('CLEAR', ('X', None), 'B410'),
-                            ('CLEAR', ('A', None), 'B400'),
-                            ('CLEAR', ('S', None), 'B440'),
-                            ('LDT', '1000', '75101000'),
-                            ('TD', '0x105c', 'E32019'),
-                            ('JEQ', '0x1040', '332FFA'),
-                            ('RD', '0x105c', 'DB2013'),
-                            ('COMPR', ('A', 'S'), 'A004'),
-                            ('JEQ', '0x1056', '332008'),
-                            ('STCH', '0x36', '57C003'),
-                            ('TIXR', ('T', None), 'B850'),
-                            ('JLT', '0x1040', '3B2FEA'),
-                            ('STX', '0x33', '134000'),
-                            ('RSUB', 0, '4F0000'),
-                            ('BYTE', "X'F1'", 'F1'),
-                            ('CLEAR', ('X', None), 'B410'),
-                            ('LDT', '0x33', '774000'),
-                            ('TD', '0x1076', 'E32011'),
-                            ('JEQ', '0x1062', '332FFA'),
-                            ('LDCH', '0x36', '53C003'),
-                            ('WD', '0x1076', 'DF2008'),
-                            ('TIXR', ('T', None), 'B850'),
-                            ('JLT', '0x1062', '3B2FEF'),
-                            ('RSUB', 0, '4F0000'),
-                            ('BYTE', "X'05'", '05')]
+        expected_code = ['17202D', '69202D', '4B101036', '032026', '290000',
+                         '332007', '4B10105D', '3F2FEC', '032010', '0F2016',
+                         '010003', '0F200D', '4B10105D', '3E2003', '454f46',
+                         'B410', 'B400', 'B440', '75101000', 'E32019',
+                         '332FFA', 'DB2013', 'A004', '332008', '57C003',
+                         'B850', '3B2FEA', '134000', '4F0000', 'F1', 'B410',
+                         '774000', 'E32011', '332FFA', '53C003', 'DF2008',
+                         'B850', '3B2FEF', '4F0000', '05']
 
-        self.assertTrue(a.generated_objects == expected_objects)
+        self.assertTrue(generated_code == expected_code)
 
 
 class TestInstructionGeneration(unittest.TestCase):
     """
     Test instruction generation for each instruction format.
     """
+    def test_format_1(self):
+        line = "TIO"
+        source_line = SourceLine.parse(line, 1)
+
+        instruction = Format1(mnemonic=source_line.mnemonic)
+        
+        results = instruction.generate()
+
+        self.assertTrue(results[2] == "F8")
+
     def test_format_2_one_register(self):
         line = "TIXR    T"
         source_line = SourceLine.parse(line, 1)

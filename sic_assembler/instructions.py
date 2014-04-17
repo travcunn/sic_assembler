@@ -156,11 +156,12 @@ class Format1(Format):
 
         # lookup the opcode
         opcode_lookup = op_table[self._mnemonic].opcode
-        stripped_opcode = str(hex(opcode_lookup)).lstrip("0x") or "0"
-        padded_opcode = stripped_opcode.zfill(2)
-        output += str(padded_opcode)
+        output += str(opcode_lookup)
 
         return self._mnemonic, None, output
+
+    def __repr__(self):
+        return "<Format1: mnemonic=%s>" % self._mnemonic
 
 
 class Format2(Format):
@@ -201,6 +202,10 @@ class Format2(Format):
             output += "0"
 
         return self._mnemonic, (self._r1, self._r2), output
+
+    def __repr__(self):
+        return "<Format2: mnemonic=%s, r1=%s, r2=%s>" % \
+                (self._mnemonic, self._r1, self._r2)
 
 
 class Format3(Format):
@@ -315,6 +320,10 @@ class Format3(Format):
         disp = int(str(self._disp), 16)
 
         return disp - base
+
+    def __repr__(self):
+        return "<Format3: mnemonic=%s, n=%s, i=%s, flags=%s, disp=%s>" % \
+                (self._mnemonic, self._n, self._i, self._flags, self._disp)
 
 
 class Format4(Format):
