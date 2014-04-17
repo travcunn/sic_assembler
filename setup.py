@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup  (
     name        = 'sic_assembler',
-    version     = '0.0.1',
+    version     = '0.7.0',
     description = 'A 2 pass SIC/XE assembler',
     author = 'Travis Cunningham',
     author_email = 'travcunn@umail.iu.edu',
