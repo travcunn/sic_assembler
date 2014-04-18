@@ -1,4 +1,4 @@
-from errors import InstructionError, LineFieldsError, UndefinedSymbolError
+from sic_assembler.errors import InstructionError, LineFieldsError, UndefinedSymbolError
 
 
 class Instr(object):

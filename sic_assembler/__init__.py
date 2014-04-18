@@ -1,8 +1,8 @@
 import argparse
 import sys
 
-from assembler import Assembler
-from errors import OpcodeLookupError
+from sic_assembler.assembler import Assembler
+from sic_assembler.errors import OpcodeLookupError
 
 
 def main():
@@ -26,9 +26,9 @@ def main():
                 a.assemble()
         except IOError:
             print("[IO Error]: The file could not be opened.")
-        except OpcodeLookupError, e:
-            print "[OpcodeLookupError] information:"
-            print e.details
+        except OpcodeLookupError as e:
+            print("[OpcodeLookupError] information:")
+            print(e.details)
             raise
     else:
         a = Assembler(sys.stdin)

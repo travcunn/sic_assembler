@@ -1,6 +1,8 @@
-from errors import DuplicateSymbolError, LineFieldsError, OpcodeLookupError
-from instructions import Format1, Format2, Format3, Format4
-from instructions import extended, op_table
+import codecs
+
+from sic_assembler.errors import DuplicateSymbolError, LineFieldsError, OpcodeLookupError
+from sic_assembler.instructions import Format1, Format2, Format3, Format4
+from sic_assembler.instructions import extended, op_table
 
 
 # A comment
@@ -51,7 +53,7 @@ class Assembler(object):
         # Symbol table
         self.symtab = dict()
         # Location counter
-        self.locctr = 0
+        self.locctr = int(0)
         # Starting address
         self.start_address = 0
         # Program length
@@ -72,7 +74,7 @@ class Assembler(object):
         """ Pass 1. """
 
         # Read the first line and search for 'START'
-        first = self.contents.next()
+        first = next(self.contents)
         first_line = SourceLine.parse(first, line_number=1)
         if first_line.mnemonic is not None:
             # If the opcode is 'START', set the locctr to the starting address
@@ -90,7 +92,7 @@ class Assembler(object):
                 # If there is a label, search for it, and/or add it to symtab
                 if source_line.label is not None:
                     if source_line.label not in self.symtab:
-                        self.symtab[source_line.label] = hex(self.locctr)
+                        self.symtab[source_line.label] = hex(int(self.locctr))
                     else:
                         raise DuplicateSymbolError(
                                 message="A duplicate symbol was found on line: " +
@@ -173,8 +175,8 @@ class Assembler(object):
                                             object_info))
                     elif source_line.operand.startswith("C"):
                         value = source_line.operand.replace("C", '')
-                        stripped_value = value.replace("'", '')
-                        hex_value = stripped_value.encode('hex')
+                        stripped_value = value.replace("'", '').encode()
+                        hex_value = codecs.encode(stripped_value, "hex")
                         object_info = (source_line.mnemonic,
                                        source_line.operand, hex_value)
                         object_code.append((source_line.location,
