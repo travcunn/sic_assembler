@@ -1,10 +1,10 @@
 import unittest
 
-from sic_assembler import assembler
-from sic_assembler import instructions
+from sic_assembler import assembler, instructions
 from sic_assembler.assembler import Assembler, SourceLine
 from sic_assembler.instructions import Format
 from sic_assembler.instructions import  Format1, Format2, Format3, Format4
+from sic_assembler.records import generate_header
 
 
 class TestFieldTypes(unittest.TestCase):
@@ -68,10 +68,10 @@ class TestSimpleAssemblyFile(unittest.TestCase):
         generated_code = []
 
         for x in self.a.generated_objects:
-            if isinstance(x, Format):
-                generated_code.append(x.generate()[2])
+            if isinstance(x[1], Format):
+                generated_code.append(x[1].generate()[2])
             else:
-                generated_code.append(x[2])
+                generated_code.append(x[1][2])
 
         expected_code = ['17202D', '69202D', '4B101036', '032026', '290000',
                          '332007', '4B10105D', '3F2FEC', '032010', '0F2016',
@@ -88,10 +88,10 @@ class TestSimpleAssemblyFile(unittest.TestCase):
         generated_code = []
 
         for x in self.a.generated_objects:
-            if isinstance(x, Format):
-                generated_code.append(x.generate()[2])
+            if isinstance(x[1], Format):
+                generated_code.append((x[0], x[1].generate()[2]))
             else:
-                generated_code.append(x[2])
+                generated_code.append((x[0], x[1][2]))
 
 
 
@@ -232,6 +232,9 @@ class TestInstructionGeneration(unittest.TestCase):
         self.assertTrue(results[2] == "75101000")
 
 
+class TestRecordGeneration(unittest.TestCase):
+    def test_header(self):
+        print generate_header('COPY', 0, )
 
 
 if __name__ == '__main__':

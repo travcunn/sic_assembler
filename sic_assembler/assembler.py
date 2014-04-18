@@ -56,6 +56,8 @@ class Assembler(object):
         self.start_address = 0
         # Program length
         self.program_length = 0
+        # Program name
+        self.program_name = None
         # BASE register
         self.base = None
         # array of tuples containing debugging information
@@ -77,6 +79,7 @@ class Assembler(object):
             if first_line.mnemonic == 'START':
                 self.start_address = int(first_line.operand, 16)
                 self.locctr = int(first_line.operand, 16)
+                self.program_name = first_line.label
 
         # Loop through every line excluding the first
         for line_number, line in enumerate(self.contents):
@@ -150,7 +153,7 @@ class Assembler(object):
                                             source_line.location,
                                             instr_format,
                                             source_line) 
-                object_code.append(instruction_output)
+                object_code.append((source_line.location, instruction_output))
 
             else:
                 if source_line.mnemonic == 'WORD':
@@ -159,21 +162,23 @@ class Assembler(object):
                     padded_value = stripped_value.zfill(6)
                     object_info = (source_line.mnemonic, source_line.operand,
                                    padded_value)
-                    object_code.append(object_info)
+                    object_code.append((source_line.location, object_info))
                 elif source_line.mnemonic == 'BYTE':
                     if source_line.operand.startswith('X'):
                         value = source_line.operand.replace("X", '')
                         stripped_value = value.replace("'", '')
                         object_info = (source_line.mnemonic,
                                        source_line.operand, stripped_value)
-                        object_code.append(object_info)
+                        object_code.append((source_line.location,
+                                            object_info))
                     elif source_line.operand.startswith("C"):
                         value = source_line.operand.replace("C", '')
                         stripped_value = value.replace("'", '')
                         hex_value = stripped_value.encode('hex')
                         object_info = (source_line.mnemonic,
                                        source_line.operand, hex_value)
-                        object_code.append(object_info)
+                        object_code.append((source_line.location,
+                                            object_info))
                 elif source_line.mnemonic == 'BASE':
                     self.base = self.symtab.get(source_line.operand)
                 elif source_line.mnemonic == 'NOBASE':

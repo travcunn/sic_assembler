@@ -204,7 +204,7 @@ class Format2(Format):
         return self._mnemonic, (self._r1, self._r2), output
 
     def __repr__(self):
-        return "<Format2: mnemonic=%s, r1=%s, r2=%s>" % \
+        return "<Format2: mnemonic=%s r1=%s r2=%s>" % \
                 (self._mnemonic, self._r1, self._r2)
 
 
@@ -322,7 +322,7 @@ class Format3(Format):
         return disp - base
 
     def __repr__(self):
-        return "<Format3: mnemonic=%s, n=%s, i=%s, flags=%s, disp=%s>" % \
+        return "<Format3: mnemonic=%s n=%s i=%s flags=%s disp=%s>" % \
                 (self._mnemonic, self._n, self._i, self._flags, self._disp)
 
 
@@ -396,6 +396,10 @@ class Format4(Format):
         hex_output = hex(int(output, 2))[2:].zfill(6).upper()
 
         return self._mnemonic, self._disp, hex_output
+
+    def __repr__(self):
+        return "<Format3: mnemonic=%s n=%s i=%s flags=%s disp=%s>" % \
+                (self._mnemonic, self._n, self._i, self._flags, self._disp)
 
 
 def determine_flags(source_line):
