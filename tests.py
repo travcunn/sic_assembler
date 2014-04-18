@@ -71,13 +71,13 @@ class TestSimpleAssemblyFile(unittest.TestCase):
 
         for x in self.a.generated_objects:
             if isinstance(x[1], Format):
-                generated_code.append(x[1].generate()[2])
+                generated_code.append(x[1].generate()[2].upper())
             else:
-                generated_code.append(x[1][2])
+                generated_code.append(x[1][2].upper())
 
         expected_code = ['17202D', '69202D', '4B101036', '032026', '290000',
                          '332007', '4B10105D', '3F2FEC', '032010', '0F2016',
-                         '010003', '0F200D', '4B10105D', '3E2003', '454f46',
+                         '010003', '0F200D', '4B10105D', '3E2003', b'454F46',
                          'B410', 'B400', 'B440', '75101000', 'E32019',
                          '332FFA', 'DB2013', 'A004', '332008', '57C003',
                          'B850', '3B2FEA', '134000', '4F0000', 'F1', 'B410',
@@ -87,9 +87,8 @@ class TestSimpleAssemblyFile(unittest.TestCase):
         matches = True
         for output in expected_code:
             if output not in generated_code:
+                matches = False
                 break
-        else:
-            matches = False
         self.assertTrue(matches)
 
     def test_output_records(self):
