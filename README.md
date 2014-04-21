@@ -71,8 +71,6 @@ Installation
 
 - Python 2.7+
 
-_This module has not been tested with Python 3._
-
 It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) to create an isolated Python environment.
 
 ##### Standard Installation
