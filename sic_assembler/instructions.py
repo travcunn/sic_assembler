@@ -160,6 +160,9 @@ class Format1(Format):
 
         return self._mnemonic, None, output
 
+    def __len__(self):
+        return 1
+
     def __repr__(self):
         return "<Format1: mnemonic=%s>" % self._mnemonic
 
@@ -202,6 +205,9 @@ class Format2(Format):
             output += "0"
 
         return self._mnemonic, (self._r1, self._r2), output
+
+    def __len__(self):
+        return 2
 
     def __repr__(self):
         return "<Format2: mnemonic=%s r1=%s r2=%s>" % \
@@ -321,6 +327,9 @@ class Format3(Format):
 
         return disp - base
 
+    def __len__(self):
+        return 3
+
     def __repr__(self):
         return "<Format3: mnemonic=%s n=%s i=%s flags=%s disp=%s>" % \
                 (self._mnemonic, self._n, self._i, self._flags, self._disp)
@@ -396,6 +405,9 @@ class Format4(Format):
         hex_output = hex(int(output, 2))[2:].zfill(6).upper()
 
         return self._mnemonic, self._disp, hex_output
+
+    def __len__(self):
+        return 4
 
     def __repr__(self):
         return "<Format3: mnemonic=%s n=%s i=%s flags=%s disp=%s>" % \

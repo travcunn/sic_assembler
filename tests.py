@@ -5,7 +5,7 @@ import sic_assembler.instructions as instructions
 from sic_assembler.assembler import Assembler, SourceLine
 from sic_assembler.instructions import Format
 from sic_assembler.instructions import  Format1, Format2, Format3, Format4
-from sic_assembler.records import generate_header
+import sic_assembler.records as records
 
 
 class TestFieldTypes(unittest.TestCase):
@@ -53,54 +53,6 @@ class TestFieldTypes(unittest.TestCase):
         self.assertTrue(instructions.literal(literal))
         non_literal = "X"
         self.assertFalse(instructions.literal(non_literal))
-
-
-class TestSimpleAssemblyFile(unittest.TestCase):
-    """
-    Test simple programs and check the generated objects and records.
-    """
-    def setUp(self):
-        # test the object code generation from page 58 in the book
-        with open('test-programs/page58.asm', 'r') as f:
-            self.a = Assembler(f)
-            self.a.first_pass()
-            self.a.second_pass()
-
-    def test_output_objects(self):
-        generated_code = []
-
-        for x in self.a.generated_objects:
-            if isinstance(x[1], Format):
-                generated_code.append(x[1].generate()[2].upper())
-            else:
-                generated_code.append(x[1][2].upper())
-
-        expected_code = ['17202D', '69202D', '4B101036', '032026', '290000',
-                         '332007', '4B10105D', '3F2FEC', '032010', '0F2016',
-                         '010003', '0F200D', '4B10105D', '3E2003', b'454F46',
-                         'B410', 'B400', 'B440', '75101000', 'E32019',
-                         '332FFA', 'DB2013', 'A004', '332008', '57C003',
-                         'B850', '3B2FEA', '134000', '4F0000', 'F1', 'B410',
-                         '774000', 'E32011', '332FFA', '53C003', 'DF2008',
-                         'B850', '3B2FEF', '4F0000', '05']
-
-        matches = True
-        for output in expected_code:
-            if output not in generated_code:
-                matches = False
-                break
-        self.assertTrue(matches)
-
-    def test_output_records(self):
-        generated_code = []
-
-        for x in self.a.generated_objects:
-            if isinstance(x[1], Format):
-                generated_code.append((x[0], x[1].generate()[2]))
-            else:
-                generated_code.append((x[0], x[1][2]))
-
-
 
 
 class TestInstructionGeneration(unittest.TestCase):
@@ -239,11 +191,84 @@ class TestInstructionGeneration(unittest.TestCase):
         self.assertTrue(results[2] == "75101000")
 
 
-"""
+class TestSimpleAssemblyFile(unittest.TestCase):
+    """
+    Test simple programs and check the generated objects and records.
+    """
+    def setUp(self):
+        # test the object code generation from page 58 in the book
+        with open('test-programs/page58.asm', 'r') as f:
+            self.a = Assembler(f)
+            self.a.first_pass()
+            self.a.second_pass()
+
+    def test_output_objects(self):
+        generated_code = []
+
+        for x in self.a.generated_objects:
+            if isinstance(x[1], Format):
+                generated_code.append(x[1].generate()[2].upper())
+            else:
+                generated_code.append(x[1][2].upper())
+
+        expected_code = ['17202D', '69202D', '4B101036', '032026', '290000',
+                         '332007', '4B10105D', '3F2FEC', '032010', '0F2016',
+                         '010003', '0F200D', '4B10105D', '3E2003', b'454F46',
+                         'B410', 'B400', 'B440', '75101000', 'E32019',
+                         '332FFA', 'DB2013', 'A004', '332008', '57C003',
+                         'B850', '3B2FEA', '134000', '4F0000', 'F1', 'B410',
+                         '774000', 'E32011', '332FFA', '53C003', 'DF2008',
+                         'B850', '3B2FEF', '4F0000', '05']
+
+        matches = True
+        for output in expected_code:
+            if output not in generated_code:
+                matches = False
+                break
+        self.assertTrue(matches)
+
+    def test_output_records(self):
+        generated_code = []
+
+        for x in self.a.generated_objects:
+            if isinstance(x[1], Format):
+                generated_code.append((x[0], x[1].generate()[2]))
+            else:
+                generated_code.append((x[0], x[1][2]))
+
+
 class TestRecordGeneration(unittest.TestCase):
-    def test_header(self):
-        print generate_header('COPY', 0, )
-"""
+    def test_header_record(self):
+        h = records.gen_header('COPY', 4096, 4218)
+        expected_header = "HCOPY  00100000107A"
+
+        self.assertTrue(h == expected_header)
+
+    def test_text_record(self):
+        with open('test-programs/page58.asm', 'r') as f:
+            a = Assembler(f)
+            a.first_pass()
+            a.second_pass()
+
+        t = records.gen_text(a.generated_objects)
+        expected_t = ['T0000001D17202D69202D4B1010360320262900003320074B10105D3F2FEC032010',
+                        'T00001D1D0F20160100030F200D4B10105D3E2003454F46B410B400B44075101000',
+                        'T0010401FE32019332FFADB2013A00433200857C003B8503B2FEA1340004F0000F1B410',
+                        'T00105F18774000E32011332FFA53C003DF2008B8503B2FEF4F000005']
+        
+        records_match = t[0] == expected_t[0] and \
+                        t[1] == expected_t[1] and \
+                        t[2] == expected_t[2] and \
+                        t[3] == expected_t[3]
+
+        self.assertTrue(records_match)
+
+    def test_end_record(self):
+        e = records.gen_end(4096)
+        expected_e = "E001000"
+
+        self.assertTrue(e == expected_e)
+
 
 if __name__ == '__main__':
     unittest.main()

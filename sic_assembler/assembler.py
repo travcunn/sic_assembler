@@ -3,6 +3,7 @@ import codecs
 from sic_assembler.errors import DuplicateSymbolError, LineFieldsError, OpcodeLookupError
 from sic_assembler.instructions import Format1, Format2, Format3, Format4
 from sic_assembler.instructions import extended, op_table
+from sic_assembler.records import generate_records
 
 
 # A comment
@@ -63,12 +64,18 @@ class Assembler(object):
         # BASE register
         self.base = None
         # array of tuples containing debugging information
-        self.generated_objects = []
+        self.__generated_objects = []
+        # array of the generated records
+        self.__generated_records = []
 
     def assemble(self):
         """ Assemble the contents of a file-like object. """
-        self.first_pass()
-        self.second_pass()
+        if len(self.generated_records) is not 0:
+            self.first_pass()
+            self.second_pass()
+            self.__generated_records = self.generate_records()
+
+        return self.generated_records
 
     def first_pass(self):
         """ Pass 1. """
@@ -186,7 +193,7 @@ class Assembler(object):
                 elif source_line.mnemonic == 'NOBASE':
                     self.base = None
 
-        self.generated_objects = object_code
+        self.__generated_objects = object_code
 
     def generate_instruction(self, line_number, instr_format, source_line):
         if instr_format is 1:
@@ -206,6 +213,20 @@ class Assembler(object):
             instruction = Format4(symtab=self.symtab, source_line=source_line)
 
         return instruction
+
+    def generate_records(self):
+        return generate_records(generated_objects=self.generated_objects,
+                                program_name=self.program_name,
+                                start_address=self.start_address,
+                                program_length=self.program_length)
+
+    @property
+    def generated_objects(self):
+        return self.__generated_objects
+
+    @property
+    def generated_records(self):
+        return self.__generated_records
 
 
 def base_mnemonic(mnemonic):
