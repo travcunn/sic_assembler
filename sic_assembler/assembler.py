@@ -1,6 +1,7 @@
 import codecs
 
 from sic_assembler.errors import DuplicateSymbolError, LineFieldsError, OpcodeLookupError
+from sic_assembler.instructions import Format
 from sic_assembler.instructions import Format1, Format2, Format3, Format4
 from sic_assembler.instructions import extended, op_table
 from sic_assembler.records import generate_records
@@ -58,7 +59,7 @@ class Assembler(object):
         # Starting address
         self.start_address = 0
         # Program length
-        self.program_length = 0
+        self.program_lenght = 0
         # Program name
         self.program_name = None
         # BASE register
@@ -70,7 +71,7 @@ class Assembler(object):
 
     def assemble(self):
         """ Assemble the contents of a file-like object. """
-        if len(self.generated_records) is not 0:
+        if len(self.__generated_records) is 0:
             self.first_pass()
             self.second_pass()
             self.__generated_records = self.generate_records()
@@ -146,6 +147,7 @@ class Assembler(object):
 
                 # Add to the temporary array
                 self.temp_contents.append(source_line)
+ 
 
     def second_pass(self):
         """ Pass 2. """
@@ -215,6 +217,14 @@ class Assembler(object):
         return instruction
 
     def generate_records(self):
+        last_line = self.generated_objects[len(self.generated_objects)-1]
+        if isinstance(last_line[1], Format):
+            self.program_length = self.locctr + len(last_line[1].generate()) - \
+                    self.start_address
+        else:
+            self.program_length = self.locctr + len(last_line[1])/2 - \
+                    self.start_address
+
         return generate_records(generated_objects=self.generated_objects,
                                 program_name=self.program_name,
                                 start_address=self.start_address,

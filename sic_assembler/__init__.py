@@ -13,26 +13,42 @@ def main():
     if sys.stdin.isatty():
         parser.add_argument("file", help="file to be assembled.")
         parser.add_argument('-o','--outfile', help='output file',
-                            default='a.out', required=False)
+                            default=None, required=False)
         parser.add_argument('-v', '--verbosity', type=int, choices=[0, 1, 2],
                             default=0, help='increase output verbosity')
-        parser.add_argument('-l', '--logfile', help='info and error log file',
-                            required=False)
         args = parser.parse_args()
 
         try:
-            with open(args.file) as f:
+            with open(args.file, 'r') as f:
                 a = Assembler(f, args.verbosity)
-                a.assemble()
+                output_records = a.assemble()
         except IOError:
-            print("[IO Error]: The file could not be opened.")
+            print("[IO Error]: The source file could not be opened.")
         except OpcodeLookupError as e:
             print("[OpcodeLookupError] information:")
             print(e.details)
             raise
+        else:
+            try:
+                if args.outfile is None:
+                    for record in output_records:
+                        print(record)
+                else:
+                    with open(args.outfile, 'w') as w:
+                        for record in output_records:
+                            w.write(record)
+                            w.write('\n')
+            except IOError:
+                print("[IO Error]: The output file could not be opened.")
     else:
         a = Assembler(sys.stdin)
-        a.assemble()
+        try:
+            output_records = a.assemble()
+        except StopIteration:
+            print("[IO Error]: The source program could not be read from stdin")
+        else:
+            for record in output_records:
+                print(record)
 
 
 if __name__ == '__main__':
