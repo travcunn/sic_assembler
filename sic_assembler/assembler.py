@@ -74,6 +74,7 @@ class Assembler(object):
         if len(self.__generated_records) is 0:
             self.first_pass()
             self.second_pass()
+            # Generate some records
             self.__generated_records = self.generate_records()
 
         return self.generated_records

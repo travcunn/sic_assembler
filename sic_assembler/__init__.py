@@ -21,7 +21,8 @@ def main():
         try:
             with open(args.file, 'r') as f:
                 a = Assembler(f, args.verbosity)
-                output_records = a.assemble()
+                a.assemble()
+                output_records = a.generated_records
         except IOError:
             print("[IO Error]: The source file could not be opened.")
         except OpcodeLookupError as e:
@@ -43,7 +44,8 @@ def main():
     else:
         a = Assembler(sys.stdin)
         try:
-            output_records = a.assemble()
+            a.assemble()
+            output_records = a.generated_records
         except StopIteration:
             print("[IO Error]: The source program could not be read from stdin")
         else:
