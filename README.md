@@ -16,7 +16,7 @@ This is a multi-pass SIC/XE assembler implemented in Python.
 
 Features
 --------
-To better understand the functionality of the assembler, more than 2 steps were needed. The 2 step assembler mentioned in the textbook generates object records as each source line is encountered in the second pass. Instead, we added an additional step to allow for easy analysis of the object code. On pass 2, this assembler generates "Format" objects that are placed into an array. This allows for the user to check the instruction format bits of each instruction before they are converted into hex. The final step takes each object from the array and generates a hex representation of the instruction.
+To better understand the functionality of the assembler, more than 2 steps were needed. The 2 step assembler mentioned in the textbook generates object records as each source line is encountered in the second pass. Instead, we added an additional step to allow for easy analysis of the object code. On pass 2, this assembler generates "Format" objects that are placed into an array. This allows for the user to check each bit of the instruction before it is converted into hex. The final step takes each object from the array and generates a hex representation of the instruction.
 
 Basic features:
 
