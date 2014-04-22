@@ -11,7 +11,6 @@ This is a multi-pass SIC/XE assembler implemented in Python.
 - [Usage](#usage)
 - [Command Line Usage](#command-line-usage)
 - [Testing](#testing)
-- [Caveats](#caveats)
 
 
 Features
@@ -132,8 +131,3 @@ Code coverage (including a report of lines that were not executed during the tes
 
     $ coverage run tests.py
     $ coverage report -m
-    
-    
-Caveats
--------
-- __The "simple" SIC program on page 47 is not valid a SIC/XE program.__ As mentioned later in chapter 2, if the mnemonic refers to a Format 4 instruction, our SIC/XE assembler should first attempt PC relative addressing, followed by an attempt to perform BASE relative addressing. An attempt to perform either of these addressing modes would raise an error when processing "CLOOP   JSUB   RDREC", since the label for "RDREC" is at hex(2039) and the location of "CLOOP" is at hex(1003). As we can see, the decimal of hex(2039)-hex(1003)=4150, which is a value too large for either PC or BASE relative. In order for this program to work with SIC/XE, the programmer must use the BASE directive to allow for BASE relative addressing. Alternatively, the programmer could extend the instruction by using "+JSUB" to allow for a larger address to be stored in the DISP field of the instruction.
