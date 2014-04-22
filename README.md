@@ -15,6 +15,7 @@ TODO
 
 Usage
 -----
+Basic example:
 ```python
 >>> from sic_assembler import Assembler
 >>>
@@ -26,7 +27,7 @@ Usage
 ['HCOPY  000000001077', 'T0000001D17202D69202D4B1010360320262900003320074B10105D3F2FEC032010', 'T00001D1D0F20160100030F200D4B10105D3E2003454F46B410B400B44075101000', 'T0010401FE32019332FFADB2013A00433200857C003B8503B2FEA1340004F0000F1B410', 'T00105F18774000E32011332FFA53C003DF2008B8503B2FEF4F000005', 'E000000']
 ```
 
-**You can also run each pass separately:**
+Run each pass separately:
 ```python
 >>> from sic_assembler import Assembler
 >>>
@@ -51,6 +52,19 @@ Usage
 ['HCOPY  000000001077', 'T0000001D17202D69202D4B1010360320262900003320074B10105D3F2FEC032010', 'T00001D1D0F20160100030F200D4B10105D3E2003454F46B410B400B44075101000', 'T0010401FE32019332FFADB2013A00433200857C003B8503B2FEA1340004F0000F1B410', 'T00105F18774000E32011332FFA53C003DF2008B8503B2FEF4F000005', 'E000000']
 ```
 
+Write object program records to a file:
+```python
+>>> from sic_assembler import Assembler
+>>>
+>>> a = Assembler(open('test-programs/page58.asm', 'r'))
+>>> out_records = a.assemble()
+>>>
+>>> # open a file and write each object program record
+>>> with open('a.out', 'w') as out:
+>>>     for record in output_records:
+>>>         out.write(record)
+>>>         out.write('\n')
+```
 
 Command Line Usage
 ------------------
@@ -83,14 +97,14 @@ It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) to creat
     $ python setup.py install
     
 ##### Standard Installation for underprivileged user accounts
-> If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and have an underprileged account, it will not be possible to install the module correctly. Fortunately, it is still possible to run the module, since it doesn't depend on any external modules outside of the Python standard library.
+If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and have an underprileged account, it will not be possible to install the module correctly. Fortunately, it is still possible to run the module, since it doesn't depend on any external modules outside of the Python standard library.
 
     $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
     $ cd sic_assembler/sic_assembler
     $ python __init__.py ../test-programs/page58.asm
     
 ##### Development Installation
-> This requires one extra command, which will install any extra dependencies that are used in development.
+This requires one extra command, which will install any extra dependencies that are used in development.
 
     $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
     $ cd sic_assembler
