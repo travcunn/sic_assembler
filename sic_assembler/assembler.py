@@ -218,6 +218,8 @@ class Assembler(object):
         return instruction
 
     def generate_records(self):
+        if len(self.__generated_records) > 0:
+            return self.generated_records
         last_line = self.generated_objects[len(self.generated_objects)-1]
         if isinstance(last_line[1], Format):
             self.program_length = self.locctr + len(last_line[1].generate()) - \
@@ -226,10 +228,12 @@ class Assembler(object):
             self.program_length = self.locctr + len(last_line[1])/2 - \
                     self.start_address
 
-        return generate_records(generated_objects=self.generated_objects,
-                                program_name=self.program_name,
-                                start_address=self.start_address,
-                                program_length=self.program_length)
+        self.__generated_records = generate_records(
+                                   generated_objects=self.generated_objects,
+                                   program_name=self.program_name,
+                                   start_address=self.start_address,
+                                   program_length=self.program_length)
+        return self.generated_records
 
     @property
     def generated_objects(self):
