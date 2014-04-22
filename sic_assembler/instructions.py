@@ -270,12 +270,11 @@ class Format3(Format):
                 else:
                     symbol_address = self._symtab.get(self._disp)
             else:
-                symbol_address = self._symtab.get(self._disp)
-
+                symbol_address = self._symtab.get(self._contents.operand)
+                
             if symbol_address is not None:
                 self._disp = symbol_address
             else:
-                self._disp = 0
                 raise UndefinedSymbolError(
                         message='Undefined symbol on line: ' +
                         str(self._line_number+1), code=1,

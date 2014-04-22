@@ -177,7 +177,7 @@ class TestInstructionGeneration(unittest.TestCase):
         self.assertTrue(results[2] == "75101000")
 
 
-class TestSimpleAssemblyFile(unittest.TestCase):
+class TestAssemblyFile(unittest.TestCase):
     """
     Test simple programs and check the generated objects and records.
     """
@@ -213,14 +213,23 @@ class TestSimpleAssemblyFile(unittest.TestCase):
                 break
         self.assertTrue(matches)
 
-    def test_output_records(self):
-        generated_code = []
 
-        for x in self.a.generated_objects:
-            if isinstance(x[1], Format):
-                generated_code.append((x[0], x[1].generate()[2]))
-            else:
-                generated_code.append((x[0], x[1][2]))
+class TestSimpleAssemblySyntaxChanges(TestAssemblyFile):
+    """
+    Test a simple program with syntax changes and check the output.
+    """
+    def setUp(self):
+
+        from sic_assembler.errors import OpcodeLookupError
+
+        # test the object code generation from page 58 in the book
+        with open('test-programs/page58-syntax-changes.asm', 'r') as f:
+            self.a = Assembler(f)
+            try:
+                self.a.first_pass()
+            except OpcodeLookupError as e:
+                print e.details
+            self.a.second_pass()
 
 
 class TestRecordGeneration(unittest.TestCase):

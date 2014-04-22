@@ -11,6 +11,7 @@ This is a multi-pass SIC/XE assembler implemented in Python.
 - [Usage](#usage)
 - [Command Line Usage](#command-line-usage)
 - [Testing](#testing)
+- [Caveats](#caveats)
 
 
 Features
@@ -131,7 +132,33 @@ Code coverage (including a report of lines that were not executed during the tes
 
     $ coverage run tests.py
     $ coverage report -m
-    
+
+
+Caveats
+-------
+- The supplied "test-programs/functions.txt" contains an undefined symbol 
+reference.
+
+In the test program "test-programs/functions.txt", there is a typo on line 11.
+To allow for the program to run correctly, it is required to either change the
+reference from "EOF" to "EOR" or change the label of "EOR" to "EOF". 
+
+When attempting to assemble "test-programs/functions.txt", you will encounter 
+an error:
+
+    sic_assembler.errors.UndefinedSymbolError: 'Undefined symbol on line: 10'
+
+This fix changes the reference:
+
+Incorrect:
+```asm
+ENDFIL	LDA	EOF	.Insert End Of File Marker
+```
+Correct:
+```asm
+ENDFIL	LDA	EOR	.Insert End Of File Marker
+```
+
 
 Project Requirements
 --------------------

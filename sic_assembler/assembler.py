@@ -13,6 +13,17 @@ comment = lambda x: x.split()[0].startswith('.')
 blank_line = lambda x: len(x.split()) == 0
 
 
+def remove_comments(line):
+    """
+    Search for a string beginning with a comment in a line and remove all
+    every element after that element.
+    """
+    for x, y in enumerate(line):
+        if comment(y):
+            return line[:x]
+    return line
+
+
 class SourceLine(object):
     def __init__(self, line_number, label, mnemonic, operand):
         self.location = None
@@ -24,7 +35,16 @@ class SourceLine(object):
     @staticmethod
     def parse(line, line_number):
         """ Parse an individual line and return a SourceLine object. """
-        fields = line.split()
+        fields = remove_comments(line.split())
+
+        # if there is a space between operands, fix it
+        if len(fields) > 1 and fields[1].endswith(','):
+            operands = fields.pop(1) + fields.pop(1)
+            fields.append(operands)
+        elif len(fields) > 2 and fields[2].endswith(','):
+            operands = fields.pop(2) + fields.pop(2)
+            fields.append(operands)
+
         if len(fields) is 3:
             return SourceLine(label=fields[0], mnemonic=fields[1],
                               operand=fields[2], line_number=line_number)
@@ -59,9 +79,9 @@ class Assembler(object):
         # Starting address
         self.start_address = 0
         # Program length
-        self.program_lenght = 0
+        self.program_length = 0
         # Program name
-        self.program_name = None
+        self.program_name = ""
         # BASE register
         self.base = None
         # array of tuples containing debugging information
