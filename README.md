@@ -131,3 +131,17 @@ Code coverage (including a report of lines that were not executed during the tes
 
     $ coverage run tests.py
     $ coverage report -m
+    
+
+Project Requirements
+--------------------
+> Your implementation can begin from the most basic function and then gradually contain more functions.
+It is best that once your program is successful on testing a sample, modify the sample a little bit, and check it again.
+
+> I will modify the sample programs somehow to test your program when grading your project.  There may be a project presentation at the end of the semester.
+
+> About the project, the following materials need to be submitted at the end of the semester (per team):
+
+> 1. Project report (25 percent of the project score), which may include, among others, your teams members, the functions of your implementation, the tasks of each team member, language used and why you select this language, the modules/objects and their relations of your program, the main data structures/objects of your program, the processing logic, the implementation stages, the problems encountered during your implementation (including debug) and how your team managed to overcome, lessions learned, your gains from the project,  or any other things you want to mention or discuss.
+2. your source files.
+3. readme file, indicating how to compile and run (5 percent).
