@@ -48,15 +48,6 @@ If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and have
     $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
     $ cd sic_assembler/sic_assembler
     $ python __init__.py ../test-programs/page58.asm
-    
-##### Development Installation
-This requires one extra command, which will install any extra dependencies that are used in development.
-
-    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
-    $ cd sic_assembler
-    $ pip install -r requirements.txt
-    $ python setup.py develop
-
 
 
 Usage
