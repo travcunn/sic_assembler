@@ -14,7 +14,7 @@ class TestFieldTypes(unittest.TestCase):
     """
     def test_comment(self):
         self.assertTrue(assembler.comment(".     SUBROUTINE TO WRITE RECORD FROM BUFFER"))
-        self.assertFalse(assembler.comment("WLOOP    CLEAR     X")
+        self.assertFalse(assembler.comment("WLOOP    CLEAR     X"))
 
     def test_blank_line(self):
         self.assertTrue(assembler.blank_line("         "))
