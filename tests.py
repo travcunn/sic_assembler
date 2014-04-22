@@ -13,46 +13,32 @@ class TestFieldTypes(unittest.TestCase):
     Test each of the methods for parsing the source program.
     """
     def test_comment(self):
-        comment_line = ".     SUBROUTINE TO WRITE RECORD FROM BUFFER"
-        self.assertTrue(assembler.comment(comment_line))
-        non_comment_line = "WLOOP    CLEAR     X"
-        self.assertFalse(assembler.comment(non_comment_line))
+        self.assertTrue(assembler.comment(".     SUBROUTINE TO WRITE RECORD FROM BUFFER"))
+        self.assertFalse(assembler.comment("WLOOP    CLEAR     X")
 
     def test_blank_line(self):
-        blank_line = "         "
-        self.assertTrue(assembler.blank_line(blank_line))
-        non_blank_line = "COPY      START      0"
-        self.assertFalse(assembler.blank_line(non_blank_line))
+        self.assertTrue(assembler.blank_line("         "))
+        self.assertFalse(assembler.blank_line("COPY      START      0"))
 
     def test_indexed_addressing(self):
-        indexed_operand = "BUFFER,X"
-        self.assertTrue(instructions.indexed(indexed_operand))
-        invalid_syntax = "BUFFER, X"
-        self.assertFalse(instructions.indexed(invalid_syntax))
+        self.assertTrue(instructions.indexed("BUFFER,X"))
+        self.assertFalse(instructions.indexed("BUFFER, X"))
 
     def test_indirect_addressing(self):
-        indirect_operand = "@RETADR"
-        self.assertTrue(instructions.indirect(indirect_operand))
-        non_indirect_operand = "RETADR"
-        self.assertFalse(instructions.indirect(non_indirect_operand))
+        self.assertTrue(instructions.indirect("@RETADR"))
+        self.assertFalse(instructions.indirect("RETADR"))
 
     def test_immediate_operand(self):
-        operand = "#3355"
-        self.assertTrue(instructions.immediate(operand))
-        non_immediate = "ZERO"
-        self.assertFalse(instructions.immediate(non_immediate))
+        self.assertTrue(instructions.immediate("#3355"))
+        self.assertFalse(instructions.immediate("ZERO"))
 
     def test_extended(self):
-        opcode = "+LDT"
-        self.assertTrue(instructions.extended(opcode))
-        non_extended = "LDT"
-        self.assertFalse(instructions.extended(non_extended))
+        self.assertTrue(instructions.extended("+LDT"))
+        self.assertFalse(instructions.extended("LDT"))
 
     def test_literal(self):
-        literal = "=X'05'"
-        self.assertTrue(instructions.literal(literal))
-        non_literal = "X"
-        self.assertFalse(instructions.literal(non_literal))
+        self.assertTrue(instructions.literal("=X'05'"))
+        self.assertFalse(instructions.literal("X"))
 
 
 class TestInstructionGeneration(unittest.TestCase):
