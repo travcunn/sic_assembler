@@ -4,7 +4,7 @@ from setuptools import setup
 setup  (
     name        = 'sic_assembler',
     version     = '1.0.0',
-    description = 'A 2 pass SIC/XE assembler',
+    description = 'A mult- pass SIC/XE assembler',
     author = 'Travis Cunningham',
     author_email = 'travcunn@umail.iu.edu',
     url = 'https://github.com/travcunn/sic_assembler',
