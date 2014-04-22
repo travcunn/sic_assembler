@@ -7,10 +7,48 @@ This is a 2 pass SIC/XE assembler implemented in Python.
 
 ###### Written by Travis Cunningham and Ashli Elrod
 
+- [Installation](#installation)
+- [Usage](#usage)
+- [Command Line Usage](#command-line-usage)
+- [Testing](#testing)
+- [Caveats](#caveats)
+
 
 Features
 --------
 TODO
+
+
+Installation
+------------
+
+**Requirements**
+
+- Python 2.7+
+
+It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) to create an isolated Python environment.
+
+##### Standard Installation
+
+    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
+    $ cd sic_assembler
+    $ python setup.py install
+    
+##### Standard Installation for underprivileged user accounts
+If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and have an underprileged account, it will not be possible to install the module correctly. Fortunately, it is still possible to run the module, since it doesn't depend on any external modules outside of the Python standard library.
+
+    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
+    $ cd sic_assembler/sic_assembler
+    $ python __init__.py ../test-programs/page58.asm
+    
+##### Development Installation
+This requires one extra command, which will install any extra dependencies that are used in development.
+
+    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
+    $ cd sic_assembler
+    $ pip install -r requirements.txt
+    $ python setup.py develop
+
 
 
 Usage
@@ -81,37 +119,6 @@ You can also [pipe](http://www.linfo.org/pipes.html) things around:
     $ cat my-program.asm | sic-assembler > outfile
 
 
-Installation
-------------
-
-**Requirements**
-
-- Python 2.7+
-
-It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) to create an isolated Python environment.
-
-##### Standard Installation
-
-    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
-    $ cd sic_assembler
-    $ python setup.py install
-    
-##### Standard Installation for underprivileged user accounts
-If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and have an underprileged account, it will not be possible to install the module correctly. Fortunately, it is still possible to run the module, since it doesn't depend on any external modules outside of the Python standard library.
-
-    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
-    $ cd sic_assembler/sic_assembler
-    $ python __init__.py ../test-programs/page58.asm
-    
-##### Development Installation
-This requires one extra command, which will install any extra dependencies that are used in development.
-
-    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
-    $ cd sic_assembler
-    $ pip install -r requirements.txt
-    $ python setup.py develop
-
-
 Testing
 -------
 This SIC/XE assembler has unit tests and regression tests.
@@ -129,16 +136,3 @@ Code coverage (including a report of lines that were not executed during the tes
 Caveats:
 --------
 - __The "simple" SIC program on page 47 is not valid a SIC/XE program.__ As mentioned later in chapter 2, if the mnemonic refers to a Format 4 instruction, our SIC/XE assembler should first attempt PC relative addressing, followed by an attempt to perform BASE relative addressing. An attempt to perform either of these addressing modes would raise an error when processing "CLOOP   JSUB   RDREC", since the label for "RDREC" is at hex(2039) and the location of "CLOOP" is at hex(1003). As we can see, the decimal of hex(2039)-hex(1003)=4150, which is a value too large for either PC or BASE relative. In order for this program to work with SIC/XE, the programmer must use the BASE directive to allow for BASE relative addressing. Alternatively, the programmer could extend the instruction by using "+JSUB" to allow for a larger address to be stored in the DISP field of the instruction.
-
-
-Useful development links
-------------------------
-
-http://www-rohan.sdsu.edu/~stremler/2003_CS530/SicArchitecture.html
-
-http://www.unf.edu/~cwinton/html/cop3601/s10/class.notes/basic4-SICfmts.pdf
-
-http://cis.csuohio.edu/~jackie/cis335/sicxe_address.txt
-
-Littab information: 
-http://www.ut.edu.sa/documents/10156/1897914/Chapter+17-18
