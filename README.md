@@ -1,7 +1,8 @@
 SIC/XE Assembler
 ================
 
-The SIC machine is a hypothetical computer system that can be found in "System Software: An Introduction to Systems Programming", by Leland Beck.
+The SIC machine is a hypothetical computer system that can be found in 
+"System Software: An Introduction to Systems Programming", by Leland Beck.
 
 This is a multi-pass SIC/XE assembler implemented in Python.
 
@@ -16,11 +17,19 @@ This is a multi-pass SIC/XE assembler implemented in Python.
 
 Features
 --------
-To better understand the functionality of the assembler, more than 2 steps were needed. The 2 step assembler mentioned in the textbook generates object records as each source line is encountered in the second pass. Instead, we added an additional step to allow for easy analysis of the object code. On pass 2, this assembler generates "Format" objects that are placed into an array. This allows for the user to check each bit of the instruction before it is converted into hex. The final step takes each object from the array and generates a hex representation of the instruction.
+To better understand the functionality of the assembler, more than 2 steps 
+were needed. The 2 step assembler mentioned in the textbook generates object 
+records as each source line is encountered in the second pass. Instead, we 
+added an additional step to allow for easy analysis of the object code. On 
+pass 2, this assembler generates "Format" objects that are placed into an 
+array. This allows for the user to check each bit of the instruction before 
+it is converted into hex. The final step takes each object from the array and 
+generates a hex representation of the instruction.
 
 Basic features:
 
-- Indexed addressing, direct and indirect addressing, immediate addressing modes
+- Indexed addressing, direct and indirect addressing, immediate addressing 
+modes
 - PC and BASE relative addressing
 - Extended format instructions (format 4)
 
@@ -38,7 +47,8 @@ Installation
 
 - Python 2.7+
 
-It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) to create an isolated Python environment.
+It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) 
+to create an isolated Python environment.
 
 ##### Standard Installation
 
@@ -47,7 +57,10 @@ It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) to creat
     $ python setup.py install
     
 ##### Standard Installation for underprivileged user accounts
-If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and have an underprileged account, it will not be possible to install the module correctly. Fortunately, it is still possible to run the module, since it doesn't depend on any external modules outside of the Python standard library.
+If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and 
+have an underprileged account, it will not be possible to install the module 
+correctly. Fortunately, it is still possible to run the module, since it 
+doesn't depend on any external modules outside of the Python standard library.
 
     $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
     $ cd sic_assembler/sic_assembler
@@ -109,7 +122,8 @@ Write object program records to a file:
 
 Command Line Usage
 ------------------
-Included is a command line utility for assembling source files, which can be run after installing the package:
+Included is a command line utility for assembling source files, which can be 
+run after installing the package:
 
     $ sic-assembler ./my-program.asm
     
@@ -128,7 +142,8 @@ Run all of the tests:
 
     $ python tests.py
     
-Code coverage (including a report of lines that were not executed during the tests):
+Code coverage (including a report of lines that were not executed during the 
+tests):
 
     $ coverage run tests.py
     $ coverage report -m
@@ -136,14 +151,16 @@ Code coverage (including a report of lines that were not executed during the tes
 
 Caveats
 -------
-- The supplied [test-programs/functions.txt](test-programs/functions.txt) contains an undefined symbol 
-reference on line 11.
+- The supplied [test-programs/functions.txt](test-programs/functions.txt) 
+contains an undefined symbol reference on line 11.
 
 To allow for the program to run correctly, it is required to either change the
-reference from "EOF" to "EOR" on line 11 or change the label of "EOR" to "EOF" on line 17. 
+reference from "EOF" to "EOR" on line 11 or change the label of "EOR" to 
+"EOF" on line 17. 
 
-When attempting to assemble [test-programs/functions.txt](test-programs/functions.txt), you will encounter 
-an error:
+When attempting to assemble 
+[test-programs/functions.txt](test-programs/functions.txt), you will 
+encounter an error:
 
     sic_assembler.errors.UndefinedSymbolError: 'Undefined symbol on line: 11'
 

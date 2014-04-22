@@ -277,7 +277,7 @@ class Format3(Format):
             else:
                 raise UndefinedSymbolError(
                         message='Undefined symbol on line: ' +
-                        str(self._line_number+1), code=1,
+                        str(self._line_number+2), code=1,
                         contents=self._contents)
         #TODO: process the literal here in an elif
         else:
