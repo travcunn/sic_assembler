@@ -16,7 +16,15 @@ This is a 2 pass SIC/XE assembler implemented in Python.
 
 Features
 --------
-TODO
+- Indexed addressing, direct and indirect addressing, immediate addressing modes
+- PC and BASE relative addressing
+- Extended format instructions (format 4)
+
+Directives:
+- BYTE, WORD, RESB, RESW, BASE
+
+Object records:
+- Header, Text, and End
 
 
 Installation
