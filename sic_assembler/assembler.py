@@ -261,7 +261,3 @@ def determine_format(mnemonic):
         return op_table[mnemonic[1:]].format + 1
     else:
         return op_table[mnemonic].format
-
-
-def step(message):
-    raw_input(message)
