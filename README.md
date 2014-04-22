@@ -136,28 +136,23 @@ Code coverage (including a report of lines that were not executed during the tes
 
 Caveats
 -------
-- The supplied "test-programs/functions.txt" contains an undefined symbol 
-reference.
+- The supplied [test-programs/functions.txt](test-programs/functions.txt) contains an undefined symbol 
+reference on line 11.
 
-In the test program "test-programs/functions.txt", there is a typo on line 11.
 To allow for the program to run correctly, it is required to either change the
-reference from "EOF" to "EOR" or change the label of "EOR" to "EOF". 
+reference from "EOF" to "EOR" on line 11 or change the label of "EOR" to "EOF" on line 17. 
 
-When attempting to assemble "test-programs/functions.txt", you will encounter 
+When attempting to assemble [test-programs/functions.txt](test-programs/functions.txt), you will encounter 
 an error:
 
-    sic_assembler.errors.UndefinedSymbolError: 'Undefined symbol on line: 10'
+    sic_assembler.errors.UndefinedSymbolError: 'Undefined symbol on line: 11'
 
-This fix changes the reference:
+This fix changes the reference on line 11:
 
-Incorrect:
-```asm
-ENDFIL	LDA	EOF	.Insert End Of File Marker
-```
-Correct:
-```asm
-ENDFIL	LDA	EOR	.Insert End Of File Marker
-```
+    ENDFIL	LDA	EOR	.Insert End Of File Marker
+Or this fix changes the label on line 17:
+
+    EOF	BYTE	C'EOF'
 
 
 Project Requirements
