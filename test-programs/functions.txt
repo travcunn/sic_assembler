@@ -8,7 +8,7 @@ CLOOP	+JSUB	RDREC	.Read INPUT Record
 	JEQ	ENDFIL	.Exit if EOF found
 	+JSUB	WRREC	.Write OUTPUT Record
 	J	CLOOP	.Loop
-ENDFIL	LDA	EOF	.Insert End Of File Marker
+ENDFIL	LDA	EOR	.Insert End Of File Marker
 	STA	BUFFER
 	LDA	#3	.Set LENGTH = 3
 	STA	LENGTH
