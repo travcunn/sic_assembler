@@ -129,8 +129,6 @@ You can also [pipe](http://www.linfo.org/pipes.html) things around:
 
 Testing
 -------
-This SIC/XE assembler has unit tests and regression tests.
-
 Run all of the tests:
 
     $ python tests.py
