@@ -26,18 +26,27 @@ array. This allows for the user to check each bit of the instruction before
 it is converted into hex. The final step takes each object from the array and 
 generates a hex representation of the instruction.
 
-Basic features:
+__Basic features:__
 
 - Indexed addressing, direct and indirect addressing, immediate addressing 
 modes
 - PC and BASE relative addressing
 - Extended format instructions (format 4)
 
-Directives:
+__Directives:__
 - BYTE, WORD, RESB, RESW, BASE
 
-Object records:
+__Object records:__
 - Header, Text, and End
+
+__Working test files:__
+- test-programs/basic.asm
+- test-programs/functions.asm
+- ~~test-programs/literals.asm~~
+- ~~test-programs/macros.asm~~
+- test-programs/page58.asm
+- test-programs/page58-syntax-changes.asm (contains spacing between operands)
+- ~~test-programs/prog_blocks.asm~~
 
 
 Installation
