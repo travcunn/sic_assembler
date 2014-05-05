@@ -160,7 +160,7 @@ tests):
 
 Caveats
 -------
-- The supplied [test-programs/functions.txt](test-programs/functions.txt) 
+- The supplied [test-programs/functions.asm](test-programs/functions.asm) 
 contains an undefined symbol reference on line 11.
 
 To allow for the program to run correctly, it is required to either change the
@@ -168,7 +168,7 @@ reference from "EOF" to "EOR" on line 11 or change the label of "EOR" to
 "EOF" on line 17. 
 
 When attempting to assemble 
-[test-programs/functions.txt](test-programs/functions.txt), you will 
+[test-programs/functions.asm](test-programs/functions.asm), you will 
 encounter an error:
 
     sic_assembler.errors.UndefinedSymbolError: 'Undefined symbol on line: 11'
