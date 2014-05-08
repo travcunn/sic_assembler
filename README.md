@@ -12,7 +12,6 @@ This is a multi-pass SIC/XE assembler implemented in Python.
 - [Usage](#usage)
 - [Command Line Usage](#command-line-usage)
 - [Testing](#testing)
-- [Caveats](#caveats)
 
 
 Features
@@ -56,24 +55,11 @@ Installation
 
 - Python 2.7+
 
-It is helpful to use [virtualenv](http://www.virtualenv.org/en/latest/) 
-to create an isolated Python environment.
-
 ##### Standard Installation
 
     $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
     $ cd sic_assembler
     $ python setup.py install
-    
-##### Standard Installation for underprivileged user accounts
-If you are not using [virtualenv](http://www.virtualenv.org/en/latest/) and 
-have an underprileged account, it will not be possible to install the module 
-correctly. Fortunately, it is still possible to run the module, since it 
-doesn't depend on any external modules outside of the Python standard library.
-
-    $ git clone https://github.com/travcunn/sic_assembler.git sic_assembler
-    $ cd sic_assembler/sic_assembler
-    $ python __init__.py ../test-programs/page58.asm
 
 
 Usage
@@ -150,57 +136,3 @@ Testing
 Run all of the tests:
 
     $ python tests.py
-    
-Code coverage (including a report of lines that were not executed during the 
-tests):
-
-    $ coverage run tests.py
-    $ coverage report -m
-
-
-Caveats
--------
-- The supplied [test-programs/functions.asm](test-programs/functions.asm) 
-contains an undefined symbol reference on line 11.
-
-To allow for the program to run correctly, it is required to either change the
-reference from "EOF" to "EOR" on line 11 or change the label of "EOR" to 
-"EOF" on line 17. 
-
-When attempting to assemble 
-[test-programs/functions.asm](test-programs/functions.asm), you will 
-encounter an error:
-
-    sic_assembler.errors.UndefinedSymbolError: 'Undefined symbol on line: 11'
-
-This fix changes the reference on line 11:
-
-    ENDFIL	LDA	EOR	.Insert End Of File Marker
-Or this fix changes the label on line 17:
-
-    EOF	BYTE	C'EOF'
-
-
-Project Requirements
---------------------
-> Your implementation can begin from the most basic function and then 
-gradually contain more functions.
-It is best that once your program is successful on testing a sample, modify 
-the sample a little bit, and check it again.
-
-> I will modify the sample programs somehow to test your program when grading 
-your project.  There may be a project presentation at the end of the semester.
-
-> About the project, the following materials need to be submitted at the end 
-of the semester (per team):
-
-> 1. Project report (25 percent of the project score), which may include, 
-among others, your teams members, the functions of your implementation, the 
-tasks of each team member, language used and why you select this language, 
-the modules/objects and their relations of your program, the main data 
-structures/objects of your program, the processing logic, the implementation 
-stages, the problems encountered during your implementation (including debug) 
-and how your team managed to overcome, lessions learned, your gains from the 
-project,  or any other things you want to mention or discuss.
-2. your source files.
-3. readme file, indicating how to compile and run (5 percent).
